@@ -6,13 +6,16 @@
 
 2. Linux:  服务器大多基于Linux系统，它是与Windows，MacOS并列的一种操作系统(OS), 不同于你笔记本电脑的图形界面，其主要交互方式是基于SHELL(类似命令行的操作)。你通过SSH登录上服务器之后将通过命令行进行各种操作。建议预先学习Linux操作的基础知识。(对于常用操作，可以参考[网管的博客-Linux操作相关](http://a-suozhang.xyz/2019/09/06/Linux-Commands/)  )
 
-3. 网络的基础知识：首先让我们明确几个概念，每个服务器(以及你的笔记本电脑)在网络环境中是用IP地址所标识的(相当于他们的ID)
+3. LXC Container: 环境隔离的工具，类似Docker或者VMware中的虚拟机，每一个Container都是一个独立的Linux系统，你可以在其中拥有sudo权限，而不影响到其他Container的工作环境。(如果你把container搞崩了，你可以联系网管删除并重建)
+
+4. 网络的基础知识：首先让我们明确几个概念，每个服务器(以及你的笔记本电脑)在网络环境中是用IP地址所标识的(相当于他们的ID)
     - IP: 比如`101.6.64.67`，ssh中通过ip来确认需要登录哪个服务器。
-    - 域名: IP的别名，如`ztc.eva7.nics.cc`，可以认为是方便大家记忆IP的方式，比如`www.baidu.com`也是一个域名。(从IP获取域名的方式，执行`ping`命令)
+    - 域名(hostname): IP的别名，如`ztc.eva7.nics.cc`，可以认为是方便大家记忆IP的方式，比如`www.baidu.com`也是一个域名。(从IP获取域名的方式，执行`ping`命令)
+    - 初代网管为我们实验室的服务器搭建了域名服务，其中诸如`eva*.nics.cc`的域名，是服务器主机，只有网管可以登录。而类似`ztc.eva7.nics.cc`的container，是用户的container的IP，大家一般登录的是这个IP，就可以直接登录进你的container(自己的linux系统)
 
 ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210919202335.png)
 
-4. 校园网：因为各种不可抗力，这个步骤居然是我们登录服务器**最困难**的部分(也是最为个性化的部分)。由于校园网需要**准入IP**才能让服务器可以被访问，所以与一般的登录服务器不同，在登录校园网内的服务器的时候，需要**先准入IP，再正常使用ssh登录服务器**。
+5. 校园网：因为各种不可抗力，这个步骤居然是我们登录服务器**最困难**的部分(也是最为个性化的部分)。由于校园网需要**准入IP**才能让服务器可以被访问，所以与一般的登录服务器不同，在登录校园网内的服务器的时候，需要**先准入IP，再正常使用ssh登录服务器**。
     - 具体的准入方法,登录[usereg.tsinghua.edu.cn](http://usereg.tsinghua.edu.cn/), 登录自己的账号，并且选中"准入代认证"，填入你需要准入的服务器IP与密码(你的校园网账户密码)，选择“校内”或“校外”，进行登录。如果显示“登录成功”，那么说明此操作成功了。如果显示**空白**或是**IP不在DHCP表中**，说明是报错信息，请纪录下此报错信息，去索引[./qa.md](./qa.md)
     - 我们先重申几个概念，请记住他们的含义，方便大家的交流与沟通：
         - 准入:  对应着“准入待认证”中的“校内”选项，表示将对应的IP **加入校园网，使其可以在校园网内网被访问**，注意：**此操作是登录上服务器的必要条件**，且**不代表服务器能够连接外网(这个是准出所作的事情)**。一个校园网账户理论上可以准入无上限个服务器。
@@ -50,6 +53,20 @@
 
 3. 看，登录服务器就是这么简单！直接执行`ssh username@xxx.evax.nics.cc`就可以登录，发现登录不上，就去用`ping`找一下IP，然后在usereg中准入一下就可以了呢！其实你使用其他ssh软件，本质上就是以不同的GUI执行了这个操作，由于terminal是最为简单且快捷的方式，所以之后在**debug登录不上的时候，请使用terminal进行测试**
 
+## 在本地与服务器之间传输文件
+
+1. Scp命令: 
+    - 采用如 `scp ./something zhaotianchen@ztc.eva7.nics.cc:~/`
+        - scp需要与ssh类似的用户名+域名(IP)的登录方式
+        - 冒号后面的内容是服务器上的路径
+        - 注意如果要指定端口的话，用scp命令的`-P `大写(比如你要往205上scp，就需要使用`scp -P 42222 zhaotianchen@101.6.64.67`)
+        - scp支持批量拷贝文件夹，使用`-r`指令
+        - scp也支持下面所介绍的ssh config的功能哦，你可以直接`scp ./something ztc-eva7:~/`
+
+2. 如Vscode等内容可以支持直接拖拽上传下载
+
+---
+
 ## Trouble Shooting
 
 > 如果登录服务器真的像上面这么简单的话，网管就不需要写这个文档了，在其中各个环节都有可能出现问题，下面将进行错误拆解、分析，并提供解决方案。
@@ -83,3 +100,77 @@
     - 你所登录的服务器可能你的用户并没有权限，如果你是登录到其他人的container，请让其他人检查`/etc/login.user.allow`中是否有你的用户名(或者是他们加的时候是不是把你的用户名打错了)
 
 ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210919205015.png)
+
+---
+
+# 如何优雅的登录服务器
+
+> 首先请确保你掌握了上述的朴素登录服务器方式，下面让我们来试试一些fancy的操作。以下的一些trick的教程在网络上都可以找到，如果网管这里有写的不全的部分，请自行ref网络资料
+
+### 使用跳板机
+
+- 上文中我们提到过，我们的服务器都在清华内网，如果我们想要在校外网络环境 (校外WiFi - 比如你的手机热点，或者是你回家了)，也想登录服务器，那该怎么办呢？我们提供了一台**跳板机**(如果对这个概念感兴趣可以查询其意义)服务器。叫做**205**(因为它的物理位置放在4-205)，通过它作为中继，可以在校外登录服务器，它的IP是`101.6.64.67`，请记住这个IP。
+
+- 登录205的方式为：`username@101.6.64.67 -p 42222`
+    - 这个命令的含义是，从42222端口(**这个点非常关键，如果不这么做会登录不上**)，用你的实验室账户用户名和密码，去登录跳板机
+    - (我们一般登录服务器不需要指定port的原因是，ssh服务的默认端口是22，而一般我们登录服务器就是走22端口，但是205服务器必须从42222端口进行登录，如果不填写port，ssh会尝试从22端口登录205，会登录不上)
+- 成功登录之后，你就从校外环境，进入了校内环境，现在你可以在205上进行正常的ssh登录，比如`ssh zhaotianchen@ztc.eva7.nics.cc`,就可以登录了
+
+
+### 撰写ssh config并快速登录
+
+> 上面的这种登录方式太麻烦了！每次登录的时候都需要写好长一条命令！我能否以`ssh ztc-eva7`来替代`ssh zhaotianchen@ztc.eva7.nics.cc`呢？如果我想要使用跳板机，我是否可以把两次ssh的登录，当成一次登录呢？
+
+- (网管不会再在这里提供ssh config模板，而请你自己编辑一份，为了防止大家照搬而完全不理解里面内容的含义 - happened before)
+
+- 当然可以！这就是ssh config文件的作用！通过撰写一个config文件，去简化命令。
+- 对于Linux系统，编辑`~/.ssh/config`文件(如果没有，就自己创建一个)
+    - 如果你不知道`~`这个目录是什么意思，你需要补一下Linux基础，这里告诉你是`/home/username`的意思
+- 我们以登录205服务器为例，撰写一条config，并尝试`ssh 205`，看看能不能登录了？
+    - Host： 可以任意定义，这台服务器的别名，我们这里是205，所以你的测试命令将会是`ssh 205`
+    - HostName: 域名或者是IP，这里是`101.6.64.67`对于其他服务器，可以是`ztc.eva7.nics.cc`
+    - User: 表示登录服务器所用的用户，是你的服务器账户名字
+    - Port: 从哪个端口登录，默认是22，这里指定为42222，对于其他服务器，这条配置可以空着，或者是填22
+- 我们下面尝试一下通过205登录其他服务器给merge成一条config，注意把域名和用户名替换成你自己的
+    - 如下添加一条config
+    - 主要起效的是ProxyCommand这一条，表示了**通过205作为proxy来登录**
+    - 下面在terminal中`ssh ztc-eva7`,那么即使在校园网环境外，也可以一步到位了
+    - (这种proxyCommand可以叠加，你甚至可以A-B-C-D-E这样连环跳）
+
+![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210920120249.png)
+
+---
+
+![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210920115229.png)
+
+- 对于VSCode，一样可以撰写ssh config (如果你还不知道vscode正常怎么使用ssh，参考[./login-tools.md](./login-tools.md))
+    - 使用`ctrl+shift_p`，键入`ssh`,选择`Open Configuration File`
+    - 选择正确的ssh config file的位置，对于Windows来说一般是截图中的这个
+    - 按照上述的方式去撰写ssh config file，在登录ssh的时候，就可以选择Host了
+
+![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210920115702.png)
+
+![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210920115807.png)
+
+![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210920120037.png)
+
+### 免密码登录
+
+> 每次登录输密码太麻烦了！有的时候因为VSCode的bug甚至要输入两次密码！我要点开就登！
+
+- 当然可以！可以通过**拷贝公钥**的形式来实现"免密码ssh登录"
+
+- 如果你是Windows系统，且没有安装WSL(用wsl的terminal中的ssh登录相当于是用linux了)，那么请执行以下操作
+    - follow了[知乎文章](https://zhuanlan.zhihu.com/p/117292835)
+    1. 在windows中使用cmd，在上面ssh conifg的目录中打开，执行`ssh-keygen -t rsa -b 4096`
+    2. 会在这个目录下生成文件`.ssh\id_rsa.pub`
+    3. 将这个文件里的内容，复制到远程Linux 中的`~/.ssh/authorized_keys` (如果没有就新建)。
+    4. 继续登录，应该就可以不用密码了。
+    - 另外一种方式，你也可以不手动复制id_rsa.pub中的内容，而是在ssh config中也指定id_rsa文件的位置
+
+![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210920121848.png)
+
+- 对于Linux或者是Mac， 你可以直接在Terminal中完成以上操作：
+    - (本质上是因为windows的cmd下的ssh并没有提供`ssh-copy-id`命令，所以需要手动处理)
+    - `ssh-keygen -t rsa -b 4096`
+    - `ssh-copy-key -i id_rsa.pub ztc-eva7` 并遵从引导，输入密码，并且再次尝试登录
