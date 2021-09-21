@@ -30,6 +30,10 @@
 
 ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210919201428.png)
 
+- 上述知识图示:
+
+![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210920172607.png)
+
 如果你完全理解了上面的部分，并查询了相关网络资料，我们可以进行下一步了。
 
 ## 使用SSH登录服务器

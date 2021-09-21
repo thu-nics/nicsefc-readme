@@ -166,6 +166,7 @@ printf $record_value | redis-cli -h ${REDIS_HOST} -x set $key
 > 1) Slapd服务: 在我们的系统中负责传输与更新用户名称密码对，在205主机上搭建Slapd master server，用来维护最新版本的用户信息； 服务器主机中搭建起Slapd的slave server，负责从主机抓取，并且通过lxc-bridge(10.0.3.1)给各个container同步ldap数据。
 > 2) nslcd服务(nscd服务是它的辅助备份服务): 为nsswitch这种机制提供ldap的backend， 负责从ldap server(主机上)将数据抓给nsswitch
 > 3) linux的nswitch(name service switch): 本质上是linux系统层级将各种数据库做名称解析，可以认为是完成了前置服务的数据解析成了linux用户并加以创建
+> 我后来查询网络找到了做类似事情的教程[csdn文章](https://blog.csdn.net/sssssuuuuu666/article/details/109738921)以及一个[Chen Jiehua's Blog](https://chenjiehua.me/linux/ldap-auth.html)
 
 ## 2.1 Slapd服务相关配置
 
@@ -201,6 +202,8 @@ syncrepl rid=123
 ```
 
 3. 启动Slapd服务 `service slapd start`
+
+> slapd: Standalone ldap Daemon
 
 - **checkpoint**：
     - 查看slapd的service情况，应该是active的
@@ -238,7 +241,7 @@ container中的，表示从10.0.3.1的lxc bridge中来获取信息
 
 ## 2.3 管理用户登录权限
 
-> 关于用户登录权限的配置，详细可以参考pam_listfile 的手册。我们在主机上和container里都选用白名单的方式控制。
+> 关于用户登录权限的配置，详细可以参考pam_listfile 的手册。我们在主机上和container里都选用白名单的方式控制。[linux-pam-list](https://www.docs4dev.com/docs/zh/linux-pam/1.1.2/reference/sag-pam_listfile.html)
 
 1. 首先在 /etc/pam.d/common-session 中加入一行： `session required	pam_mkhomedir.so	skel=/etc/skel	umask=0022`
 2. 然后在 /etc/pam.d/sshd 的@include common-auth后的一行加入如下脚本 `auth required pam_listfile.so onerr=fail item=user sense=allow file=/etc/login.user.allow`
@@ -247,12 +250,27 @@ container中的，表示从10.0.3.1的lxc bridge中来获取信息
 4. 编辑/etc/sudoers，admin那一行下面加入：  `%srvAdmin ALL=(ALL) ALL`
     - 将sudoer组中的人都加入
 
+
+# 3. Nvidia-Driver以及CUDA相关
+
 ---
-
-
-> 采购清单: 1）T5 SSD备份重要信息    2) 小屏和线(VGA)    
 
 
 # 相关素材
 
 1. [yuque - zhongkai的网管教程](https://www.yuque.com/doctor-kaizhong/lab-network/zs137p)
+2. 物理/网络，服务器结构图:
+
+![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210920172513.png)
+
+![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210920172525.png)
+
+---
+
+# 知识点理解
+
+1. LDAP: 我目前是把它理解为了一个轻量化的可联网的数据库
+     - phpLDAPadmin: 我们登录所用的网页端操作
+2. NSS (Name Service Switch)： 为通用数据库和名称解析提供了数据来源
+    - 源文件包括: `/etc/passwd  & groups & hosts` 或是dns以及Ldap服务
+    - 配置文件为`/etc/nsswitch.conf`: 规定了查找特定信息的顺序，以及采取的动作
