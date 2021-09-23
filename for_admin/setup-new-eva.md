@@ -159,7 +159,6 @@ printf $record_value | redis-cli -h ${REDIS_HOST} -x set $key
 4. (**以下操作是在205主机上进行操作的**) crontab定时执行```python /usr/local/bin/cloudflare_dns.py --zone-id 5bxxxxxxxxxxxxxxx030 --auth-key 3exxxxxxxxxxxxxxxxxxxxxxx8d >>/var/log/cloudflare_dns.log 2>&1```
     - 这一串命令中的有些是密钥，需要代代流传，205主机上不出意外应该不会停crontab，直接从那里复制下来测试以下即可
 
-
 # 2. 用户系统(LDAP)相关
 
 > 我们的用户系统使用了LDAP(LightweightDIrectoryAccessProtocol)为核心进行管理维护，这样大家就可以直接使用实验室网站上的用户名和密码来登录服务器。其有几个部分组成: 
@@ -252,6 +251,28 @@ container中的，表示从10.0.3.1的lxc bridge中来获取信息
 
 
 # 3. Nvidia-Driver以及CUDA相关
+
+> 
+
+1. 
+
+
+# 4. 启动Container
+
+1. 从各种地方(其他eva服务器上)，scp各种文件
+    - `/opt`
+    - `/home/work/lxc`： 包含了启动脚本以及各种base-rootfs
+    - 这一步保证你拷贝的启动脚本和condfig所对应的服务器上的`/home/work`目录下的一些软连接是一致的(否则可能会报错mount不上的问题，由于rootfs中已经有了这些地址)
+2. 安装python以及jinja  `sudo apt-get install python  python-jinja2`
+3. 修改config，在`/home/work/lxc/templates/config`中，主要需要修改的是网络相关的部分(以及mount部分如果想要修改也可以)
+    - 'e2'的位置是因服务器而异的，e2表示eva2，d0表示eoe0
+    - 框子里的部分因服务器而异，是你的主机上拿到IP的那个网卡
+
+![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210922153231.png)
+
+![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210922155931.png)
+
+4. 执行`python fork_lxc_new.py`脚本，并且
 
 ---
 
