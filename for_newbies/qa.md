@@ -12,12 +12,12 @@
 
 - 首先进入`/opt/cuda-x.x/samples/1_Utiliies/deviceQuery`(cuda版本以你具体用到的cuda版本一致)**以sudo形式**执行deviceQuery，观察是否PASS，如果PASS了，那大概率是可以ok了
 - 如果报错了`ERROR_CODE=100`的话，先执行`sudo ldconfig`，再执行上面的deviceQuery
+- 如果报错了`ERROR_CODE=999`的话，截图并联系网管(在nicsefc-server群里)，帮你在主机上执行一次deviceQuery(理论上重启之后会需要这么做)
 - 如果再出现了别的错误，可以先google一下报错指令，如果没有解答的话联系网管
 
 ### 2. deviceQuery能够PASS，但是之后nvidia-smi和启动都很慢
 
 - sudo运行`/usr/local/nvidia/bin/nvidia-persistenced`
-
 
 ## [2] - 我怎么登陆不上服务器了？
 

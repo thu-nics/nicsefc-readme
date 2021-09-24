@@ -252,17 +252,25 @@ container中的，表示从10.0.3.1的lxc bridge中来获取信息
 
 # 3. Nvidia-Driver以及CUDA相关
 
-> 
+> 需要安装cuda以及driver
 
-1. 
+1. 整理成了一个脚本，在eva2上的`/home/work/nv`中，`get_nv.sh`，从eva0上拷贝对应文件，执行脚本安装，并软连接
 
+2. 由于链接会导致一些奇怪的问题:
+     - 目前我们的eva01237的配置会将`/home/work/opt`链接到container中的opt目录，这一步支持软连接(一般会将`ln -s /opt /home/work`)，但是如果主机的/opt中本身已经有了软连接，在container中将不能看到，所以需要**make sure /opt当中的cuda是文件而不是软连接**(上面的脚本中直接进行了复制)
+     - 另外`/usr/local/nvidia`也被挂载到了Container当中
+     - 总结一下，安装的位置, 在container中所visible的:
+         - CUDA - `/opt/cuda` - （包含了deviceQuery）- 主机上的/opt被连接到了`/home/work/opt`
+         - Nvidia-Driver - `/usr/local/nvidia` - (在bin中有nvidia-smi) - 主机上的相同位置
 
 # 4. 启动Container
 
-1. 从各种地方(其他eva服务器上)，scp各种文件
+1. 从各种地方(其他eva服务器上)，scp各种文件,
     - `/opt`
     - `/home/work/lxc`： 包含了启动脚本以及各种base-rootfs
     - 这一步保证你拷贝的启动脚本和condfig所对应的服务器上的`/home/work`目录下的一些软连接是一致的(否则可能会报错mount不上的问题，由于rootfs中已经有了这些地址)
+        - 在目录下新建`/data1/eva_share_users`，并软连接到`/home/work`，`ln -s /data1/eva_share_users`
+        - 在`/home/work`下新建`eva_share`以及`opt`
 2. 安装python以及jinja  `sudo apt-get install python  python-jinja2`
 3. 修改config，在`/home/work/lxc/templates/config`中，主要需要修改的是网络相关的部分(以及mount部分如果想要修改也可以)
     - 'e2'的位置是因服务器而异的，e2表示eva2，d0表示eoe0
