@@ -102,8 +102,6 @@ ip link set $INTERFACE down
 
 > 实验室使用的是Cloudfare的域名服务，在205主机上向cloudfare的DNS服务器定期更新域名。购买了`**.nics.cc`的域名，由于学校的服务器ip是由dhcp得到的，是动态更新的。所以上文中利用tinc搭建起了虚拟的nics局域网以控制固定IP(`10.4.205.xx`)。在服务器上需要做的是将自己的IP地址定期往205主机进行传输
 
-[to-fill]： 加一张图
-
 1. 安装一些软件 `apt-get install redis-tools, lxc, lxc-utils`
 2. 在新机器上编辑上述文件，命名为ip-update.sh，修改上面的网口名<NET_INTERFACE_NAME>为新机器的网口如eno1（ifconfig可以查到），编辑好后注意修改可执行权限，并放到/usr/local/bin/下等待执行。这一文件的作用是将本机的名称和公网ip发送给10.4.205.1；( 结果应该是有几个有效的container的IP就会显示几个ok )
 3. 然后将该脚本加入crontab进行定时执行`crontab -e`进入编辑器之后使用`*/5 * * * * /bin/bash /usr/local/bin/ip-update.sh > /home/ubuntu/crontab-ip-update.log 2>&1`
@@ -152,6 +150,8 @@ printf $record_value | redis-cli -h ${REDIS_HOST} -x set $key
 
 ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210917215553.png)
 
+注意本脚本对于eva1做了一些修改，本身的逻辑是"扫网卡0/1是否有连接，有的话把IP丢出去(默认是0优先)"，由于我们的eva1的0网口上搭了网络存储服务，所以有限扫1之后递IP了
+
 > 完成了该脚本之后，将新的服务器的IP信息从服务器上推送到了205的主机上，这时候登录[实验室网站查看DNS](https://nicsefc.ee.tsinghua.edu.cn/internal/dns/)应该可以看到了，但是这时候域名服务还没有正式生效，需要将205主机上的信息推送到cloudfare上，大概过几分钟才会生效；
 
 ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210917220413.png)
@@ -169,9 +169,12 @@ printf $record_value | redis-cli -h ${REDIS_HOST} -x set $key
 
 ## 2.1 Slapd服务相关配置
 
-1. 安装配置slapd的软件安装 `udo apt-get install ldap-utils, slapd`
+1. 安装配置slapd的软件安装 `sudo apt-get install ldap-utils, slapd`
     - 在安装slapd的时候，会跳出设置密码，这个密码需要记住，最好和root密码保持一致
-2. 修改slapd的配置，标准的配置文件如下 (也可以去到其他服务器进行拷贝，一样可能因为权限问题不能直接拷贝到当前目录，所以只能先拷贝到`/tmp`)
+    - 注意将原本的slapd的**配置删除**，`/etc/ldap/slapd.d` 
+        - [debug 2021-09-28] 由于没有删除原本的配置，导致本机slapd没有获取到205上的用户信息，而导致后续的报错
+        - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210928201608.png)
+2. 修改slapd的配置，`/etc/ldap/slapd.conf` 标准的配置文件如下 (也可以去到其他服务器进行拷贝，一样可能因为权限问题不能直接拷贝到当前目录，所以只能先拷贝到`/tmp`)
     - 在新版本中，可能会出现没有这个文件存在的情况，在eva1，2上测试了，直接将其他地方的复制过来能用(despite slapd的版本以及ubuntu系统版本都不一样)
     - 需要修改的部分:
         - 把 @BACKEND@ 替换成 hdb
@@ -215,7 +218,8 @@ syncrepl rid=123
 > 相当于客户端接入的配置
 
 1. 安装 `apt-get install nslcd`，安装中需要做几个配置(注意这个需要等超级久，大概几分钟)，其中需要进行几个配置
-    - LDAP服务器地址填 ldapi:///  ，可以将 ldap://10.4.205.1/作为第二 LDAP 服务器
+    - LDAP服务器地址填 ldapi:///  ，可以将 ldap://10.4.205.1/作为第二 LDAP 服务器 
+        - 注意这里的第一个表示从本地的ldap服务器抓取，后者则是从205上的ldap抓取(当205 ping不通的时候不可用)
     - base 填 dc=nics,dc=info
     - passwd, group, shadow 安装时的界面用空格选中
 2. 安装成功后，上述配置保存在 /etc/nsswitch.conf 文件中(之前有一次网管记录，需要将passwd，group，shadow都设置成`compact`现在看起来好像不一定必要)
@@ -249,7 +253,6 @@ container中的，表示从10.0.3.1的lxc bridge中来获取信息
 4. 编辑/etc/sudoers，admin那一行下面加入：  `%srvAdmin ALL=(ALL) ALL`
     - 将sudoer组中的人都加入
 
-
 # 3. Nvidia-Driver以及CUDA相关
 
 > 需要安装cuda以及driver
@@ -264,6 +267,8 @@ container中的，表示从10.0.3.1的lxc bridge中来获取信息
          - Nvidia-Driver - `/usr/local/nvidia` - (在bin中有nvidia-smi) - 主机上的相同位置
 
 # 4. 启动Container
+
+> 这一部分整理成了一个简单的bash脚本在eva1上`/home/work/setup-lxc.sh` 由于各台服务器上config有微妙的区别，所以我们还是以eva1为准。
 
 1. 从各种地方(其他eva服务器上)，scp各种文件,
     - `/opt`
@@ -280,9 +285,12 @@ container中的，表示从10.0.3.1的lxc bridge中来获取信息
 
 ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210922155931.png)
 
-4. 执行`python fork_lxc_new.py`脚本，并且
+4. 执行`python fork_lxc_new.py`脚本，并且指定硬盘位
 
 ---
+
+
+
 
 
 # 相关素材

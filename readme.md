@@ -2,7 +2,13 @@
 
 > 这里是一些新人须知，以及该repository的索引
 
-## 本Repo的索引
+## 本Repo的指引
+
+- 首先阅读本readme.md文件，明确其中内容
+- 如果需要申请Container，参考[for_newbies/mail.md](./for_newbies/mail.md)的邮件格式发送邮件申请
+- 申请Container/联系他人加入Container之后，参考[for_newbies/login.md](./for_newbies/login.md)以及[for_newbies/login-tools.md](./for_newbies/login-tools.md)尝试登录服务器
+     - 在该环节中所遇到的各种问题，都参考[for_newbies/qa.md](or_newbies/qa.md)
+- 参考[./for_beginners/eva-user-should-know.md](./for_beginners/eva-user-should-know.md)了解用户须知并安装自己的环境
 
 - for_newbies
     - (实验室新人如何使用计算资源的一些tutorial)

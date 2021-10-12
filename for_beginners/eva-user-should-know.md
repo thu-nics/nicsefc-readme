@@ -6,26 +6,15 @@
 - 这个repo的目的在于介绍一些基础常用的知识，以及杜绝一些危险操作，毕竟即使是一个container中也会有合作同学，虽然网管能够将你的container进行重置，但是可能丢失的环境以及数据难以找回。请大家**注意定期保存实验数据**并**杜绝危险操作**。
 
 
-## 从0开始配置服务器
-
-0. 你需要的一些LInux Background Knowledge
-
-1. 登录上服务器之后，如果你有CUDA使用的需求，那么首先我们需要查看cuda以及显卡情况是否正常
-    - 记住两个关键文件夹，分别是**Nvidia-Driver**以及**CUDA**, 注意，对这两个文件夹**仅进行执行操作，而不要修改**
-    - nvidia-driver，在`/usr/local/nvidia`中，其bin文件夹中有一个`nvidia-smi`的命令，是用来查询显卡情况的常见命令
-        - 为了方便你随时进行使用该命令查询，可以考虑将这个路径加入到环境变量中，加入bashrc(如果你不熟悉linux的环境变量以及bashrc的原理，请自行查询)，`export PATH=$PATH:/usr/local/nvidia/bin` 
-        - 之后随时在终端中都可以进行`nvidia-smi`进行查询了 (网管的建议是写一个即时刷新的命令，`alias nv="watch -n 0.002 -d nvidia-smi"`也加入到bashrc中)
-    - CUDA，在`/opt/cuda/samples/1_Utilities/deviceQuery`位置中有一个deviceQuery的文件，有时候经常需要执行该命令用来执行检错与cuda的debug，注意执行的时候一定要**sudo**
-        - 同理也可以加一个alias来快捷执行它`alias deviceQuery="sudo /opt/cuda-11.1/samples/1_Utilities/deviceQuery/deviceQuery"`
-        - 正常情况应该是显示pass
-        - 显示error code 999 - 去群里提醒网管帮你在主机上执行该操作，并附上截图
-        - 显示error code 100 - 执行`sudo ldconfig`
-        - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210924103422.png)
-    - CUDA标准化，我们服务器上的CUDA的位置与默认位置有所不同，可能有时候会出现因为网上其他教程按照默认位置编写导致的问题，所以，这里采用软连接的方式**尽量做到CUDA位置的标准化**
-        - `ln -s /usr/local/nvidia/lib/* /usr/local/lib/`
-        - `ln -s /opt/cuda-11.1/ /usr/local/cuda`
-        - ` export CUDA_HOME="/opt/cuda/"`
-
+## 你需要的一些LInux Background Knowledge：
+- linux基础操作:
+    - 在linux下 `ctrl+s` 下屏幕会freeze住，输入的指令**实际上是起效的**，只是不会显示，按q可以退出
+    - 在linux下`ctrl+c`是**结束指令**，而不是复制，大部分的terminal使用shift+鼠标拖动可以选中，用`ctrl+shift+c` `ctrl+shift+v` 可以复制或者粘贴
+- vim的使用:  (为了便于在服务器上修改文件)
+    - `esc - :wq` 退出vim,w是保存，q退出
+    - `i`进入insert mode
+- 软连接
+- bashrc
 
 
 ## 常用操作与技巧
@@ -39,6 +28,56 @@
 2. 同一个container访问他人目录/使用他人账号
     - `sudo su` 进入sudo目录, 然后再`sudo xxx`（你的linux用户名）
 
+## 从0开始配置服务器
+
+> 遇到问题了请大家善用搜索
+
+1. 登录上服务器之后，如果你有CUDA使用的需求，那么首先我们需要查看cuda以及显卡情况是否正常
+    - 记住两个关键文件夹，分别是**Nvidia-Driver**以及**CUDA**, 注意，对这两个文件夹**仅进行执行操作，而不要修改**
+    - nvidia-driver，在`/usr/local/nvidia`中，其bin文件夹中有一个`nvidia-smi`的命令，是用来查询显卡情况的常见命令
+        - 为了方便你随时进行使用该命令查询，可以考虑将这个路径加入到环境变量中，加入bashrc(如果你不熟悉linux的环境变量以及bashrc的原理，请自行查询)，`export PATH=$PATH:/usr/local/nvidia/bin` 
+        - 之后随时在终端中都可以进行`nvidia-smi`进行查询了 (网管的建议是写一个即时刷新的命令，`alias nv="watch -n 0.002 -d nvidia-smi"`也加入到bashrc中)
+    - CUDA，在`/opt/cuda/samples/1_Utilities/deviceQuery`位置中有一个deviceQuery的文件，有时候经常需要执行该命令用来执行检错与cuda的debug，注意执行的时候一定要**sudo**
+        - 同理也可以加一个alias来快捷执行它`alias deviceQuery="sudo /opt/cuda/samples/1_Utilities/deviceQuery/deviceQuery"`
+        - 正常情况应该是显示pass
+        - 显示error code 999 - 去群里提醒网管帮你在主机上执行该操作，并附上截图
+        - 显示error code 100 - 执行`sudo ldconfig`
+        - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210924103422.png)
+        - 在opt目录下，你可能看到多个cuda版本，比如`/opt/cuda`和一个`/opt/cuda-11.1`, 注意区分文件是真实文件，还是软连接
+    -  (如果你安装的库不报错，这一步理论上不需要做) CUDA标准化，我们服务器上的CUDA的位置与默认位置有所不同，可能有时候会出现因为网上其他教程按照默认位置编写导致的问题，所以，这里采用软连接的方式**尽量做到CUDA位置的标准化**，这一步需要sudo
+        - `ln -s /usr/local/nvidia/lib/* /usr/local/lib/`
+        - `ln -s /opt/cuda/ /usr/local/cuda`
+        - `export CUDA_HOME="/opt/cuda/"`
+    - 有的时候由于cuda位置不在标准位置，可能会报错: `ImportError: libcusparse.so.11: cannot open shared object file: No such file or directory`
+        - 需要将cuda的对应库的位置加到LD_LIBRARY的环境变量中 `export LD_LIBRARY_PATH="/opt/cuda/lib64:$LD_LIBRARY_PATH"`
+
+2. 可以从/opt目录拷贝一些常用文件过来，注意该目录的scp需要sudo权限
+
+3. 你可能需要自己使用apt安装一些基本库,比如:
+     - gcc
+     - g++
+     - htop
+
+## 从老服务器迁移
+
+> 如果你之前已经有了一个container或者自己的环境配置了，希望迁移到新的服务器，那么不必从0开始
+
+- **注意:** 对于新的服务器，CUDA等相关系统配置仍然需要自己check一下，上一章的CUDA-check仍然需要做
+
+0. 拷贝你的各种配置
+ - `~/.bashrc` 等
+
+1. 迁移整个conda环境
+    - 对于python环境的迁移，网络上的教程很多诉诸于`pip freeze / conda list --export > requirements.txt`,但是这种方式经常可能因为dependancy问题导致失败，这里建议： **使用conda-pack**打包整个conda环境。[教程参考](https://conda.github.io/conda-pack/)
+
+- 如果你的环境非常复杂，且所占用空间不大，有一种特别一劳永逸的方法，联系网管**直接拷贝你i的整个lxc Container**
+    - 如果选择这种方式，请**邮件向网管发起申请**，并清理你container中的checkpoint等大文件
+    - 由于这种方式本质上违背了我们“建立container以完成环境隔离”，即“一个Container做一件事情”，所以如果做此申请，请**确保有明确的理由**，如果只是懒得再配置一遍环境，网管不会受理这种请求
+
+## 没什么鸟用的操作
+
+1. neofetch:
+    - 个人的一点恶趣味，登录时候显示一些额外的信息，配置文件在`~/.config/neofetch`中
 
 
 
