@@ -28,6 +28,10 @@
 2. 同一个container访问他人目录/使用他人账号
     - `sudo su` 进入sudo目录, 然后再`sudo xxx`（你的linux用户名）
 
+3. Container空间不足？请将checkpoint等文件移动到`eva_share`当中去
+    - 将一些实验数据以及checkpoint文件，移动到`/data/eva_share_users` 当中，建立自己的文件夹，在这里的文件container内部可以访问，且不计入container磁盘占用
+        - 因为一些服务器的区别，可能会叫 `/opt/eva_share_users` 或者是 `/data1/eva_share_users`
+
 ## 从0开始配置服务器
 
 > 遇到问题了请大家善用搜索
