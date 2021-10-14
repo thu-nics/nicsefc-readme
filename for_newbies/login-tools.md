@@ -52,3 +52,7 @@
 > 有一些out-dated，这里暂时不做推荐，也没有教程
 
 1. 注意如果你使用FPGA服务器(fpga1/2)，可能会存在需要图形界面转发的需求； 那么你可以直接使用MobaXTerm来便捷的进行使用。
+
+2. MobaXterm使用跳板机
+    - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211014221742.png)
+    - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211014221839.png)

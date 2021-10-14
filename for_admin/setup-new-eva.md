@@ -104,7 +104,7 @@ ip link set $INTERFACE down
 
 1. 安装一些软件 `apt-get install redis-tools, lxc, lxc-utils`
 2. 在新机器上编辑上述文件，命名为ip-update.sh，修改上面的网口名<NET_INTERFACE_NAME>为新机器的网口如eno1（ifconfig可以查到），编辑好后注意修改可执行权限，并放到/usr/local/bin/下等待执行。这一文件的作用是将本机的名称和公网ip发送给10.4.205.1；( 结果应该是有几个有效的container的IP就会显示几个ok )
-3. 然后将该脚本加入crontab进行定时执行`crontab -e`进入编辑器之后使用`*/5 * * * * /bin/bash /usr/local/bin/ip-update.sh > /home/ubuntu/crontab-ip-update.log 2>&1`
+3. 然后将该脚本加入crontab进行定时执行`crontab -e`进入编辑器之后使用`*/5 * * * * /bin/bash /usr/local/bin/ip-update.sh > /home/ubuntu/crontab-ip-update.log 2>&1` （请执行一次测试一下，有些服务器上没有ubuntu这个用户了，可能会导致因为没有这个log路径而导致dump失效的问题，所以需要check一下，比如改成`/home/work`）
 
 ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210917214455.png)
 
@@ -288,9 +288,6 @@ container中的，表示从10.0.3.1的lxc bridge中来获取信息
 4. 执行`python fork_lxc_new.py`脚本，并且指定硬盘位
 
 ---
-
-
-
 
 
 # 相关素材

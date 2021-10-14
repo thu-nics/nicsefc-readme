@@ -43,7 +43,8 @@
         - 之后随时在终端中都可以进行`nvidia-smi`进行查询了 (网管的建议是写一个即时刷新的命令，`alias nv="watch -n 0.002 -d nvidia-smi"`也加入到bashrc中)
     - CUDA，在`/opt/cuda/samples/1_Utilities/deviceQuery`位置中有一个deviceQuery的文件，有时候经常需要执行该命令用来执行检错与cuda的debug，注意执行的时候一定要**sudo**
         - 同理也可以加一个alias来快捷执行它`alias deviceQuery="sudo /opt/cuda/samples/1_Utilities/deviceQuery/deviceQuery"`
-        - 正常情况应该是显示pass
+        - 正常情况应该是显示pass，对于显卡后面信息，如果显示NO是正常现象(这个指示的是各个gpu之间的互联，我们并没有nvlink，都是走的pcie)
+        -  ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211014115151.png)
         - 显示error code 999 - 去群里提醒网管帮你在主机上执行该操作，并附上截图
         - 显示error code 100 - 执行`sudo ldconfig`
         - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210924103422.png)
@@ -54,6 +55,7 @@
         - `export CUDA_HOME="/opt/cuda/"`
     - 有的时候由于cuda位置不在标准位置，可能会报错: `ImportError: libcusparse.so.11: cannot open shared object file: No such file or directory`
         - 需要将cuda的对应库的位置加到LD_LIBRARY的环境变量中 `export LD_LIBRARY_PATH="/opt/cuda/lib64:$LD_LIBRARY_PATH"`
+    - 如果你有特殊的CUDA-DRIVER的需求，请联系网管协助安装
 
 2. 可以从/opt目录拷贝一些常用文件过来，注意该目录的scp需要sudo权限
 
@@ -61,6 +63,15 @@
      - gcc
      - g++
      - htop
+    - 注意对于一些相对老的rootfs，可能在换清华源之后报错 ` Certificate verification failed: The certificate is NOT trusted. The certificate chain uses expired certificate.  Could not handshake: Error in the certificate verification. [IP: 101.6.15.130 443]`
+        - 可以先在换源之前，先安装
+        - 或者暂时用阿里云的源
+
+- (optional) 安装vim(ztc的个人方案) - 想要使用可以直接拷贝zhaotianchen目录下的 `~/.vim/bundle` 以及`~/.vimrc`
+    - apt安装git以及vim  `sudo apt-get install vim git`
+    - clone Vundle as vim的包管理器(follow了初代目网管bigeagle的方案)  `mkdir -p ~/.vim/bundle;   git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim `
+    - 从其他地方拷贝`~/.vimrc`，进入，输入`:PluginInstall`, 等待它安装好
+    - molokai配色有一个bug，`~/.vim/bundle/molokai/colors/molokai.vim:line` 132行，从none->NONE
 
 ## 从老服务器迁移
 
@@ -70,6 +81,8 @@
 
 0. 拷贝你的各种配置
  - `~/.bashrc` 等
+ - `~/.vimrc` 等
+ - `~/.tmux.conf` 等
 
 1. 迁移整个conda环境
     - 对于python环境的迁移，网络上的教程很多诉诸于`pip freeze / conda list --export > requirements.txt`,但是这种方式经常可能因为dependancy问题导致失败，这里建议： **使用conda-pack**打包整个conda环境。[教程参考](https://conda.github.io/conda-pack/)
@@ -78,12 +91,11 @@
     - 如果选择这种方式，请**邮件向网管发起申请**，并清理你container中的checkpoint等大文件
     - 由于这种方式本质上违背了我们“建立container以完成环境隔离”，即“一个Container做一件事情”，所以如果做此申请，请**确保有明确的理由**，如果只是懒得再配置一遍环境，网管不会受理这种请求
 
+
 ## 没什么鸟用的操作
 
 1. neofetch:
     - 个人的一点恶趣味，登录时候显示一些额外的信息，配置文件在`~/.config/neofetch`中
-
-
 
 ## 危险操作
 
