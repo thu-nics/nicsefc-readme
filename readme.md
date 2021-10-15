@@ -62,7 +62,7 @@
 
   3. 发送邮件申请： 
 
-     * 请参考该repo下的 [`for_newbies/mail.md`](./for_newbies/mail.md)中按照邮件格式，将**其中所有内容填充之后**，发送给网管 `zhongk19@mails.tsinghua.edu.cn`  `suozhang1998@gmail.com`, 并且**抄送你的负责研究生**。网管会回复你的诉求。
+     * 请参考该repo下的 [`for_eva_users/mail.md`](./for_eva_users/mail.md)中按照邮件格式，将**其中所有内容填充之后**，发送给网管 `zhongk19@mails.tsinghua.edu.cn`  `suozhang1998@gmail.com`, 并且**抄送你的负责研究生**。网管会回复你的诉求。
      * 如果通过审核之后，网管会邮件回复给你，你的container的域名以及当前的IP，你可以用他们来登入服务器。
 
   4. 日常使用：
