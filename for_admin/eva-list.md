@@ -1,16 +1,28 @@
-# Eva-list
+# Workstations-list
 
-> eva的军需储备, 以及一些硬件调试指南
+> 服务器军需储备, 以及一些硬件调试指南
 
-## 正在服役的Eva
+## 正在服役的主机
 
-1. Eva0 （all set）
-2. Eva1
-3. Eva2
-4. Eva3: 空的，还未配置
-5. 新的两台FPGA服务器
-
-
+| 名称  | tinc IP     | 容器mac | CPU                  | GPU                       | 内存 | 其它     |
+| ----- | ----------- | ------- | -------------------- | ------------------------- | ---- | -------- |
+| 205   | 10.4.205.1  | -       | -                    | -                         | -    | -        |
+| eva0  | 10.4.205.10 | e0:xxx  | 256 AMD EPYC 7H12    | 8*GeForce RTX 3090        | 500G | 万兆网卡 |
+| eva1  | 10.4.205.11 | e1:xxx  | 256 AMD EPYC 7H12    | 8*GeForce RTX 3090        | 500G | -        |
+| eva2  | 10.4.205.12 | e2:xxx  | 256 AMD EPYC 7H12    | 8*GeForce RTX 3090        | 500G | -        |
+| eva3  | 10.4.205.13 | e3:xxx  | 256 AMD EPYC 7H12    | 8*GeForce RTX 3090        | 500G | -        |
+| eva4  | 10.4.205.14 | -       | 8 Intel i7-9700K     | 1*GeForce RTX 2080        | 60G  | -        |
+| eva7  | 10.4.205.17 | e7:xxx  | 40 Intel Silver 4210 | 8*GeForce RTX 3090        | 500G | -        |
+| eva8  | 10.4.205.18 | e8:xxx  | 40 Intel E5-2630 v4  | 8*GeForce RTX 2080 Ti     | 500G | -        |
+| eva9  | 10.4.205.19 | e9:xxx  | 40 Intel E5-2630 v4  | 8*GeForce RTX 2080 Ti     | 500G | -        |
+| eva10 | 10.4.205.30 | f0:xxx  | 40 Intel E5-2630 v4  | 8*GeForce RTX 2080 Ti     | 500G | -        |
+| eoe0  | 10.4.205.50 | d0:xxx  | 24 Intel E5-2643 v4  | 4*GeForce GTX 1080 Ti     | 90G  | -        |
+| eoe1  | 10.4.205.51 | d1:xxx  | 16 Intel i7-6900K    | 4*TITAN X (Pascal)        | 40G  | -        |
+| fpga1 | 10.4.205.41 | -       | 20 Intel i9-7900X    | -                         | 60G  | -        |
+| fpga2 | 10.4.205.42 | -       | 32 Intel Silver 4208 | -                         | 40G  | -        |
+| fpga3 | 10.4.205.43 | -       | 32 Intel Silver 4208 | -                         | 40G  | 2*U200   |
+| fpga4 | 10.4.205.44 | -       | 32 Intel Silver 4208 | -                         | 40G  | 2*U200   |
+| test0 | 10.4.205.90 | -       | 64 Intel Gold 6226R  | 2\*2080/3090/V100/AMD9100 | 250G | -        |
 
 ## 硬件相关调试指南
 
@@ -49,7 +61,7 @@
 2. 登录之后try ubuntu系统，找到Linux主文件系统所在的盘符(这次是一个400个G的，它的硬盘上还有其他类似swap之类的空间分区，将主要的分区给挂载上)
 3. `chroot /media/mount_point`, 就可以以sudo身份进入系统，然后执行操作(我的case是修正了一个文件`/etc/nsswitch.conf`), 之后登录系统就正常了
 
-### Trouble Shooting for admin
+#Trouble Shooting for admin
 
 1. ping得捅，登录不上
      - 大概率是因为在罗姆楼所以能ping通，但是登录不上
@@ -57,3 +69,5 @@
      - 大概是205正在进行域名更新，稍等几min
 3. 在服务器主机上进行了网络相关操作之后发现ping不通过各种东西
      - 不用急着重启，可能只是**准入被搞坏了，重新准入一下**
+4. 登录不上container
+     * 有时候可能是某个container出现了内存泄露，导致整个服务器被挤满了，这个时候只能上主机找到程序之后kill掉。(2021-10-14)
