@@ -8,9 +8,9 @@
 | ----- | ----------- | ------- | -------------------- | ------------------------- | ---- | -------- |
 | 205   | 10.4.205.1  | -       | -                    | -                         | -    | -        |
 | eva0  | 10.4.205.10 | e0:xxx  | 256 AMD EPYC 7H12    | 8*GeForce RTX 3090        | 500G | 万兆网卡 |
-| eva1  | 10.4.205.11 | e1:xxx  | 256 AMD EPYC 7H12    | 8*GeForce RTX 3090        | 500G | -        |
-| eva2  | 10.4.205.12 | e2:xxx  | 256 AMD EPYC 7H12    | 8*GeForce RTX 3090        | 500G | -        |
-| eva3  | 10.4.205.13 | e3:xxx  | 256 AMD EPYC 7H12    | 8*GeForce RTX 3090        | 500G | -        |
+| eva1  | 10.4.205.11 | e1:xxx  | 256 AMD EPYC 7H12    | 8*GeForce RTX 3090        | 500G | 万兆网卡 |
+| eva2  | 10.4.205.12 | e2:xxx  | 256 AMD EPYC 7H12    | 8*GeForce RTX 3090        | 500G | 万兆网卡 |
+| eva3  | 10.4.205.13 | e3:xxx  | 256 AMD EPYC 7H12    | 8*GeForce RTX 3090        | 500G | 万兆网卡 |
 | eva4  | 10.4.205.14 | -       | 8 Intel i7-9700K     | 1*GeForce RTX 2080        | 60G  | -        |
 | eva7  | 10.4.205.17 | e7:xxx  | 40 Intel Silver 4210 | 8*GeForce RTX 3090        | 500G | -        |
 | eva8  | 10.4.205.18 | e8:xxx  | 40 Intel E5-2630 v4  | 8*GeForce RTX 2080 Ti     | 500G | -        |
