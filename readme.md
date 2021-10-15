@@ -8,14 +8,14 @@
 - for_admin
     - 里面是一些网管配置和管理服务器的记录，里面没有危险信息所以就开放了，**一般用户不需要看**
 - for_newbies (实验室新人必备技能的一些tutorial)
-    - software.md - 各种常用软件
-    - deep-learning.md - 深度学习相关知识和工具
+    - software.md               - 各种常用软件
+    - deep-learning.md          - 深度学习相关知识和工具
 - for_eva_users (服务器资源申请和使用相关指南)
-    - mail.md - 申请邮件模板
-    - login.md - 关于如何登录服务器
-    - login-tools.md - 登录服务器的一些具体工具
-    - eva-user-should-know.md - 使用常识和用户须知
-    - qa.md - 常见问题速查
+    - mail.md                   - 申请邮件模板
+    - login.md                  - 关于如何登录服务器
+    - login-tools.md            - 登录服务器的一些具体工具
+    - eva-user-should-know.md   - 使用常识和用户须知
+    - qa.md                     - 常见问题速查
 
 # 如何……
 
@@ -29,7 +29,7 @@
       - 用户名也请不要使用过于简单的，如你的名字拼音开头，可能会存在重名问题以及安全隐患，建议采用全名+年份，如zhongkai19
       - 悲惨案例：2021-09, 由于合作老师的同学使用了弱密码，导致被其他人暴力破解登陆上服务器并使用服务器挖矿
 2. 完善信息
-    - 注册好实验室账号之后，请填写 [NICS实验室Profile](http://nicsefc.ee.tsinghua.edu.cn/internal/profile/)，你的信息将出现在[https://nicsefc.ee.tsinghua.edu.cn/people/](https://nicsefc.ee.tsinghua.edu.cn/people/) 中
+    - 注册好实验室账号之后，请填写 [NICS实验室Profile](http://nicsefc.ee.tsinghua.edu.cn/internal/profile/)，你的信息将出现在[NICS实验室人员](https://nicsefc.ee.tsinghua.edu.cn/people/) 中
 
 ## 如何使用计算资源
 
@@ -62,20 +62,20 @@
 
   3. 发送邮件申请： 
 
-     * 请参考该repo下的 [`for_eva_users/mail.md`](./for_eva_users/mail.md)中按照邮件格式，将**其中所有内容填充之后**，发送给网管 `zhongk19@mails.tsinghua.edu.cn`  `suozhang1998@gmail.com`, 并且**抄送你的负责研究生**。网管会回复你的诉求。
+     * 请参考该repo下的 [for_eva_users/mail.md](./for_eva_users/mail.md)中按照邮件格式，将**其中所有内容填充之后**，发送给网管 `zhongk19@mails.tsinghua.edu.cn`  `suozhang1998@gmail.com`, 并且**抄送你的负责研究生**。网管会回复你的诉求。
      * 如果通过审核之后，网管会邮件回复给你，你的container的域名以及当前的IP，你可以用他们来登入服务器。
 
   4. 日常使用：
 
      * 申请Container/联系他人加入Container之后，参考[for_eva_users/login.md](./for_eva_users/login.md)以及[for_eva_users/login-tools.md](./for_eva_users/login-tools.md)尝试登录服务器
 
-     * 可参考[./for_eva_users/eva-user-should-know.md](./for_eva_users/eva-user-should-know.md)了解用户须知并安装自己的环境并注意关键问题
+     * 可参考[for_eva_users/eva-user-should-know.md](./for_eva_users/eva-user-should-know.md)了解用户须知并安装自己的环境并注意关键问题
      * 遇到的各种问题，都参考[for_eva_users/qa.md](./for_eva_users/qa.md)
      * **请联系你的负责研究生将你拉入nics-server微信群**，该群可以进行服务器问题的讨论，非必要或十万火急，请不要私聊网管提问服务器问题。(网管会把本链接丢给你，让你自己看)
 
   5. **上手体验方案**：如果你是新同学，还只是刚进组了解工作情况的状态，但是你想先上手体验和练习一下Linux系统使用，不想mess-up负责研究生的环境。这么好学的行为，网管怎么会不鼓励呢！请联系网管(在nicsefc-server群中)，将你的名字加入到sandbox container当中。之后用你的名字登录`sandbox.eoe0.nics.cc`,就可以开始进行学习了。(注意: 这个环境也会坏，而且是所有新同学共享的playground，所以，**不要肆意妄为！**) 另外，这个环境下的配置是不可以一键迁移到其他环境中的，所以像它的名字一样，请你把它当成一个”沙盒“。
 
-* 登录服务器：由于涉及到较多概念与操作，单开一个文件，请参考本repo的[`for_eva_users/login.md`](./for_eva_users/login.md) 
+* 登录服务器：由于涉及到较多概念与操作，单开一个文件，请参考本repo的[for_eva_users/login.md](./for_eva_users/login.md) 
 
 ## 如何提问交流
 
@@ -88,7 +88,7 @@
     - 网管不会配置环境，出现了报错先自行进行搜索和debug，**初步判断是Container内的环境问题还是与服务器主机有关**。网管**不负责帮忙配环境！**，请你推测出**你的问题可能会与LXC环境有关或者环境出现明显问题**，再在群里进行提问。
 
 0. 先自己思考或者Google(能不baidu尽量不baidu)问题可能出现的原因，排除掉自己误操作可能性。
-1. 查看本repo的[`for_eva_users/qa.md`](./for_eva_users/qa.md)（建议收藏该page），自查有没有自己的问题，如果有，先按照解决方案进行操作
+1. 查看本repo的[for_eva_users/qa.md](./for_eva_users/qa.md)（建议收藏该page），自查有没有自己的问题，如果有，先按照解决方案进行操作
     - 对于一些比较general的问题，如（我cuda怎么用不了了？我的服务器怎么登录不上了？），请**仔细阅读qa，并尝试并给出报错信息再提问**，比如nvidia-smi的报错信息，或是usereg登录时候的报错信息，能否ping通ip？
 2. 在nics-server微信群内，提问
 3. 如果你担心自己的问题比较愚蠢，咨询自己的负责研究生问题的解决方案 (为了他的血压，请完成第一步之后再执行此操作)
