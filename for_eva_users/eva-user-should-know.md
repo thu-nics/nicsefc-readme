@@ -80,7 +80,7 @@
         - clone Vundle as vim的包管理器(follow了初代目网管bigeagle的方案)  `mkdir -p ~/.vim/bundle;   git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim `
         - 从其他地方拷贝`~/.vimrc`，进入，输入`:PluginInstall`, 等待它安装好
         - molokai配色有一个bug，`~/.vim/bundle/molokai/colors/molokai.vim:line` 132行，从none->NONE
-    - (zk的个人方案) - 可以参考https://github.com/I-Doctor/my_configs，里面不仅有vim配置，还有bashrc和tmux的配置(实现了tmux基本个性化和一个tmux窗口保存与恢复功能，用的一个叫resurrect插件)
+    - (zk的个人方案) - 可以参考[https://github.com/I-Doctor/my_configs]，里面不仅有vim配置，还有bashrc和tmux的配置(实现了tmux基本个性化和一个tmux窗口保存与恢复功能，用的一个叫resurrect插件)
 
 ## 从老服务器迁移
 
