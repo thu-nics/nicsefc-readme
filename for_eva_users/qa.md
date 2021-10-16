@@ -84,5 +84,8 @@
 
 ## [4] - 环境相关
 
-
+- apt安装报错
+    - 对于一些rootfs，可能在换清华源之后运行`sudo apt update`时报错 ` Certificate verification failed: The certificate is NOT trusted. The certificate chain uses expired certificate.  Could not handshake: Error in the certificate verification. [IP: 101.6.15.130 443]`
+        - 可以手动将/apt/source.list中的https改成http，然后运行`sudo apt update`即可成功，注意此时运行`sudo apt install ca-certificates`安装验证，然后改回https,这样更安全
+        - 或者暂时用阿里云的源（不过阿里云的源不准出可能无法使用？）
 
