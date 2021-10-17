@@ -208,4 +208,3 @@
     - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211013133336.png)
     - 直接下载google的网页作为测试，如果成功了，现象应该是这样
     - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211013133443.png)
-
