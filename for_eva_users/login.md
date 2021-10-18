@@ -192,8 +192,7 @@
 > 写这个post的motivation是github经常被墙，给我们sync code带来了麻烦，因此需要让服务器用上梯子
 
 - 如果只是为了使用 github ，也可以在 github 上配置 ssh 下载（而不是使用 https ），一般来说不用起飞就可以正常 clone
-
-配置 ssh 的方式可以参考 github 的官方文档 https://docs.github.com/en/authentication/connecting-to-github-with-ssh
+    - 配置 ssh 的方式可以参考 github 的官方文档 https://docs.github.com/en/authentication/connecting-to-github-with-ssh
 
 - 如果要使用此功能，你的梯子软件**需要能够配置http服务开在某个端口**，如果你是买的那种别人自己host的小飞机，可能就不一定支持这个功能；对于这种情况，网管也没有太好的办法；网管自己对梯子的解决方案是购买JustMySocks的梯子，并且使用V2ray/SS等程序使用。（与小飞机的关系你可以理解为，小飞机的host自己买了很多服务器并且又包装了一层卖）
     - 比如我们的V2ray客户端中就可以设置http-proxy开在本地的10809端口
