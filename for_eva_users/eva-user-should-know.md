@@ -104,6 +104,13 @@
 1. neofetch:
     - 个人的一点恶趣味，登录时候显示一些额外的信息，配置文件在`~/.config/neofetch`中
 
+2. 迁移大文件 rsync
+    使用 rsync 代替 cp 可以在迁移大文件的时候看到进度，并支持断点续传功能
+    
+    下载和安装 `apt-get install rsync`
+
+    代替 cp 进行复制的使用方式 `rsync -avP source/folder destination/` 可以将 source/folder 文件夹移动到 destination/folder，其中，`-v` 使得移动式会输出各种信息
+
 ## 危险操作
 
 > 由于我们的container中大家一般都会有sudo权限，可能就会做出一些危险操作，在此进行列举。
