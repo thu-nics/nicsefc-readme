@@ -17,6 +17,9 @@
     - eva-user-should-know.md   - 使用常识和用户须知
     - qa.md                     - 常见问题速查
 
+- 本repo中的一些图片由github图床所维护，所以可能需要科学上网才可见(但由于本repo也在github上维护，所以理论上不会出现显示不出的问题)
+    - 如果图没有load出来，check Ur VPN
+
 # 如何……
 
 ## 如何成为实验室的一员

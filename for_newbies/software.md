@@ -6,6 +6,12 @@
 
 > 常用命令，常用软件
 
+- SHELL就是传统意义上的 ”Linux命令行“(CLI - command line interface)，使用linux，请首先学会命令行
+    - [IPADS新人培训第一讲：Shell-哔哩哔哩](https://b23.tv/8DIwrX)， 上交IPADS组的一个shell教程，非常推荐看一下，包含了一些command-line tools以及bash-scripts的使用
+
+- apt安装软件
+    - 由于我们使用的是清华tuan源，所以理论并不需要准出也可以进行apt的软件安装
+
 ### Tmux
 
 - tmux是linux下的多窗口工具，可以将多个Terminal排列在屏幕中，且**可以避免因为SSH登录终端而导致信息丢失的情况** (比如你直接连接上服务器跑一个程序，然后因为网断了，ssh session断了，于是程序就fail了，但是如果使用tmux的话，可以理解为**程序跑在tmux**里面，而tmux的server一直在服务器上跑着，所以程序不会掉，你只需要重新登录并执行 `tmux-attach即可`)
@@ -44,6 +50,11 @@ run -b '~/.tmux/plugins/tpm/tpm'
 
 > 因为本届网管主要用vim，大部分服务器也预装vim，所以在这里大概会介绍vim的使用
 
+#### Vim
+
+1. [最强Vim新手指南，手把手教你打造只属于自己的代码编辑器！-哔哩哔哩](https://b23.tv/AQTlVZ)
+    - 有一些标题党和浮躁，但是内容还比较适合入门
+
 ## 2. Git(版本控制)
 
 > git非常常用！学会一次，受用终身！
@@ -59,3 +70,9 @@ run -b '~/.tmux/plugins/tpm/tpm'
 ## 4. 文献管理
 
 > 因人而异，欢迎补充
+
+## 42. 一些零零散散的小工具
+
+1. [command-not-found](https://command-not-found.com/)
+
+![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211031102116.png)

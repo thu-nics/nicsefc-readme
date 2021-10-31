@@ -2,7 +2,7 @@
 
 > 登录以及使用eva服务器，应该知道什么？
 
-- 当我们开始之前，我们假定你已经阅读完了本repo的readme和login相关文档，并对linux系统以及命令有了一些初步的了解，如果没有，请加以了解。
+- 当我们开始之前，我们假定你已经阅读完了本repo的readme和login相关文档(主要是[../for_newbies/software.md](../for_newbies/software.md))，并对linux系统以及命令有了一些初步的了解，如果没有，请加以了解。
 - 这个repo的目的在于介绍一些基础常用的知识，以及杜绝一些危险操作，毕竟即使是一个container中也会有合作同学，虽然网管能够将你的container进行重置，但是可能丢失的环境以及数据难以找回。请大家**注意定期保存实验数据**并**杜绝危险操作**。
 
 ## 你需要的一些LInux Basic Knowledge
