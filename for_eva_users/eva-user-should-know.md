@@ -39,6 +39,7 @@
     - 其它数据如conda文件，甚至你自己的整个home目录，其实也都可以移走，只需要移动后在原地创建一个同名软连接即可，这样一切访问和功能都正常，但空间占用换了地方。
         - 使用软连接是一个不错的习惯，这也有助于我们代码可迁移性，比如不同机器上实际的数据集可能存在不同的位置，但是在不同机器上跑实验我们不想反复修改代码中访问数据集的路径，则可以在代码中统一写作从`/home/xxx/datasets`访问数据集，在所有机器`/home/xxx/datasets`都建立软连接指向实际数据存储的位置即可，保存实验checkpoint时当然也是如此。
 
+
 ## 从0开始配置服务器
 
 > 遇到问题了请大家善用搜索
@@ -63,6 +64,7 @@
     - 有的时候由于cuda位置不在标准位置，可能会报错: `ImportError: libcusparse.so.11: cannot open shared object file: No such file or directory`
         - 需要将cuda的对应库的位置加到LD_LIBRARY的环境变量中 `export LD_LIBRARY_PATH="/opt/cuda/lib64:$LD_LIBRARY_PATH"`
     - 如果你有特殊的CUDA-DRIVER的需求，请联系网管协助安装
+    - 由于我们的container管理方式，大家共享一份硬件资源，所以在container内部使用nvidia-smi并不能看到实际占用显卡资源的pid，可以在`/opt/nvidia.log`文件中查询到每分钟更新的当前显卡占用情况的pid以及对应程序详情。
 
 2. 可以从/opt目录拷贝一些常用文件过来，注意该目录的scp需要sudo权限
 

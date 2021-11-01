@@ -266,6 +266,15 @@ container中的，表示从10.0.3.1的lxc bridge中来获取信息
          - CUDA - `/opt/cuda` - （包含了deviceQuery）- 主机上的/opt被连接到了`/home/work/opt`
          - Nvidia-Driver - `/usr/local/nvidia` - (在bin中有nvidia-smi) - 主机上的相同位置
 
+3. 定时dump nvidia-smi以及ps
+    - 由于我们的container内部是不能查看到smi的pid的，为大家查看显卡使用带来了麻烦，因此选择了比较简单的fix方式，在主机上用crontab定期执行smi，依据其筛选出对应的ps，并dump到某个文件中，内容在脚本 `eva7:/home/zhaotianchen/get-nv-status.sh`，内容如下
+    - 在root的crontab中添加一条`* * * * *  /home/zhaotianchen/get-nv-status.sh > /home/work/opt/nvidia.log` (由于crontab默认只支持到1min，所以暂时先用1min了)
+
+``` bash
+/usr/local/nvidia/bin/nvidia-smi
+ps -up `/usr/local/nvidia/bin/nvidia-smi -q -x | grep pid | sed -e 's/<pid>//g' -e 's/<\/pid>//g' -e 's/^[[:space:]]*//'
+```
+
 # 4. 启动Container
 
 > 这一部分整理成了一个简单的bash脚本在eva1上`/home/work/setup-lxc.sh` 由于各台服务器上config有微妙的区别，所以我们还是以eva1为准。
