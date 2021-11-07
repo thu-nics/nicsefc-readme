@@ -61,9 +61,9 @@
 2. 登录之后try ubuntu系统，找到Linux主文件系统所在的盘符(这次是一个400个G的，它的硬盘上还有其他类似swap之类的空间分区，将主要的分区给挂载上)
 3. `chroot /media/mount_point`, 就可以以sudo身份进入系统，然后执行操作(我的case是修正了一个文件`/etc/nsswitch.conf`), 之后登录系统就正常了
 
-#Trouble Shooting for admin
+# Trouble Shooting for admin
 
-1. ping得捅，登录不上
+1. ping得通，登录不上
      - 大概率是因为在罗姆楼所以能ping通，但是登录不上
 2. 登录的上205，但是ping服务器完全不出东西
      - 大概是205正在进行域名更新，稍等几min
@@ -71,3 +71,28 @@
      - 不用急着重启，可能只是**准入被搞坏了，重新准入一下**
 4. 登录不上container
      * 有时候可能是某个container出现了内存泄露，导致整个服务器被挤满了，这个时候只能上主机找到程序之后kill掉。(2021-10-14)
+
+
+# 其他管理
+
+## 注册新用户
+
+- Win下： 修改host文件，加上这一条
+     - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211107205317.png)
+- 在插件中添加一条request head(注意之后与LDAP的服务进行切换)
+     - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211107205430.png)
+- (由于我配置了端口转发，访问这个url，下面这个更稳定)
+     - `http://nicsefc_old.ee.tsinghua.edu.cn:12888/internal/auth/login/?next=/internal/`
+     - `http://nicsefc_old.ee.tsinghua.edu.cn:12888/internal/auth/signup/`
+
+---
+
+- 更方便的方式直接使用 `https://nicsefc.ee.tsinghua.edu.cn/nicsadmin/signup.html`
+     - 输入注册
+     - 默认密码 **口口相传**
+     - 验证问题 **口口相传**
+
+## 新网站后台权限控制
+
+- 进入 `Authorization`，搜索用户修改权限
+     - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211107205735.png)
