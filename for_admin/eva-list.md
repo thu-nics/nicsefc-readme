@@ -37,6 +37,17 @@
      - （改成k3就是CPU，k4是内存，改成k5就是虚拟内存）
      - 有时候登录不上container，可能有原因是某个container出现了内存泄露，导致整个服务器被挤满了，这个时候只能上主机找到程序之后kill掉。(2021-10-14)
 
+### 修改container的rootfs大小
+
+``` bash
+
+lxc-stop -n $ROOTFS_NAME
+truncate -s ${NEW_SIZE}G $ROOTFS_PATH
+e2fsck -f $ROOTFS_PATH
+resize2fs $ROOTFS_PATH ${NEW_SIZE}G
+lxc-start -n $ROOTFS_NAME
+
+```
 
 
 ### LDAP php前端
@@ -71,9 +82,11 @@
      - 不用急着重启，可能只是**准入被搞坏了，重新准入一下**
 4. 登录不上container
      * 有时候可能是某个container出现了内存泄露，导致整个服务器被挤满了，这个时候只能上主机找到程序之后kill掉。(2021-10-14)
+5. 磁盘问题：
+     * 由于磁盘超发，导致某container的磁盘写错误而导致变成readonly filesystem,(会直接显示整块磁盘满了，但是实际上它没满)，直接运行磁盘检查，并进行搬运。
 
 
-# 其他管理
+# 其他管理 - 网站
 
 ## 注册新用户
 
