@@ -47,6 +47,14 @@
 
 ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210920113635.png)
 
+7. 进阶技巧：免密码登陆
+
+如果你不希望每次打开 vscode 的时候都需要输入密码，可以参考 [官方说明](https://code.visualstudio.com/docs/remote/troubleshooting) 中的 `Quick start: Using SSH keys` 章节配置 SSH Keys 来验证自己的身份：
+
+`Create your local SSH key pair` 用于在本地生成 SSH Key；
+
+根据本机器的系统版本阅读 `Authorize your XXX machine to connect` 来授权使得本地的 SSH Key 公钥可以登陆服务器
+
 # MobaXTerm
 
 > 有一些out-dated，这里暂时不做推荐，也没有教程
