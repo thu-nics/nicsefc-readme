@@ -2,13 +2,21 @@
 
 > 必先利其器
 
-## 0. Linux 相关知识
+## 参考课程
+
+1. [MIT - The Missing Semester of Your CS Education](https://missing-semester-cn.github.io/)
+    - 非常经典的Intro Class，很建议至少看一遍文字资料
+2. [IPADS新人培训第一讲：Shell-哔哩哔哩](https://b23.tv/8DIwrX)
+    - 上交IPADS组的一个shell教程，非常推荐看一下，包含了一些command-line tools以及bash-scripts的使用; 在该b站账号上有一系列后续教程
+
+
+## 0. Linux 相关
 
 > 常用命令，常用软件
 
 - SHELL就是传统意义上的 ”Linux命令行“(CLI - command line interface)，使用linux，请首先学会命令行
     - [IPADS新人培训第一讲：Shell-哔哩哔哩](https://b23.tv/8DIwrX)， 上交IPADS组的一个shell教程，非常推荐看一下，包含了一些command-line tools以及bash-scripts的使用
-
+ 
 - apt安装软件
     - 由于我们使用的是清华tuan源，所以理论并不需要准出也可以进行apt的软件安装
 
@@ -46,7 +54,7 @@ set -g @plugin 'tmux-plugins/tmux-resurrect'
 run -b '~/.tmux/plugins/tpm/tpm'
 ```
 
-## 1. 编辑器的使用
+## 1. 编辑器
 
 > 因为本届网管主要用vim，大部分服务器也预装vim，所以在这里大概会介绍vim的使用
 

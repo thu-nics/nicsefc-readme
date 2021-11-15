@@ -89,3 +89,22 @@
         - 可以手动将/apt/source.list中的https改成http，然后运行`sudo apt update`即可成功，注意此时运行`sudo apt install ca-certificates`安装验证，然后改回https,这样更安全
         - 或者暂时用阿里云的源（不过阿里云的源不准出可能无法使用？）
 
+
+
+## [5] - Container维护相关
+
+1. 允许他人登录你的Container并给予sudo权限: 
+     - 编辑准许登陆名单文件(注意需要sudo) `sudo vim /etc/login.user.allow` 将他人的**实验室账号用户名**添加到该文件中并保存。对于sudo权限，同样使用sudo编辑`sudo vim /etc/sudoers`参照里面已有的模板修改
+        - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210923194748.png)
+     - 关于sudo权限，网管的建议是谨慎给与，仅较相关且长期(频繁)使用Container sudo权限的才给
+     - 另外，实验室**严令禁止**随意共享实验室账号密码的行为，基本的切换用户需求有其它办法做到(参考本部分第二条)
+
+2. 同一个container访问他人目录/使用他人账号
+    - `sudo su` 进入sudo用户, 然后再`su xxx`（他人的用户名）
+
+3. Container空间不足？
+    - 将一些实验记录以及checkpoint文件，移动到`/data/eva_share_users` 当中，注意建立自己用户名命名的文件夹
+        - 因为一些服务器的区别，可能会叫 `/opt/eva_share_users` 或者是 `/data1/eva_share_users`或者是`/home/eva_share_users`。运行`df -h`可以查看。
+    - 如果有数据集，可以考虑放到`/data/eva_share`
+    - 其它数据如conda文件，甚至你自己的整个home目录，其实也都可以移走，只需要移动后在原地创建一个同名软连接即可，这样一切访问和功能都正常，但空间占用换了地方。
+        - 使用软连接是一个不错的习惯，这也有助于我们代码可迁移性，比如不同机器上实际的数据集可能存在不同的位置，但是在不同机器上跑实验我们不想反复修改代码中访问数据集的路径，则可以在代码中统一写作从`/home/xxx/datasets`访问数据集，在所有机器`/home/xxx/datasets`都建立软连接指向实际数据存储的位置即可，保存实验checkpoint时当然也是如此。
