@@ -79,6 +79,10 @@ run -b '~/.tmux/plugins/tpm/tpm'
 
 > 因人而异，欢迎补充
 
+### Zotero
+
+- [github-一些zotero使用说明](https://github.com/redleafnew/Chinese-STD-GB-T-7714-related-csl/stargazers)
+
 ## 42. 一些零零散散的小工具
 
 1. [command-not-found](https://command-not-found.com/)
