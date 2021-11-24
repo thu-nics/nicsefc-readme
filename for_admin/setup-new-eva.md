@@ -296,8 +296,65 @@ ps -up `/usr/local/nvidia/bin/nvidia-smi -q -x | grep pid | sed -e 's/<pid>//g' 
 
 4. 执行`python fork_lxc_new.py`脚本，并且指定硬盘位
 
+
+# 其他一些有趣的配置
+
+
+# 安装Docker
+
+- follow [this guide](https://yeasy.gitbook.io/docker_practice/install/mirror) step by step可以在主机上安装Docker
+
+# 安装Self-Host Overleaf
+
+> follow [this blog](https://yxnchen.github.io/technique/Docker%E9%83%A8%E7%BD%B2ShareLaTeX%E5%B9%B6%E7%AE%80%E5%8D%95%E9%85%8D%E7%BD%AE%E4%B8%AD%E6%96%87%E7%8E%AF%E5%A2%83/) 以及一个[B站文章](https://www.bilibili.com/read/cv6547551)
+
+0. 开始之前首先确保docker与docker-compose已经安装完毕
+    - docker的安装见上一步
+    - 新服务器如果没有pip，使用`apt-get install python3-pip`,其中docker-compose可用pip安装，`pip install docker-compose`
+         - 它报了一个warning让把`/home/xxx/.local/bin`加入PATH环境变量(这个路径应该是用pip装可执行文件的路径，添加了之后直接在终端执行`docker-compose`才不会报command not found)
+
+- 启动Overleaf的Docker Container
+    1. 从Dockerhub上pull下sharelatex的image `$ docker pull sharelatex/sharelatex` (这一步可能需要外网，可以直接换成)
+    2. 拷贝sharelatex的docker-compose `curl -O https://raw.githubusercontent.com/sharelatex/sharelatex/master/docker-compose.yml ` (同理需要外网，可以用wget配置代理，或者本地下载之后上传) 并且修改端口(主要是本地80端口容易被占用，我选择了5000，含义是将container的80端口转发到host的5000端口) 
+        - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211124210550.png)
+    3. `docker-compose up -d` 启动container，此时理论上就可以通过5000端口看到网站了，但是不要急，还需要进行更多的配置
+        - (这个命令不要反复执行，会将原本的container覆盖掉)
+    4. 通过 `docker exec -it sharelatex bash` 进入container (sharelatex是container的名字)
+        - 更换texlive的下载源 `tlmgr option repository https://mirrors.tuna.tsinghua.edu.cn/CTAN/systems/texlive/tlnet/`
+        - 运行texlive的完整更新(时间很长，但是不影响网页的使用，建议挂在tmux里慢慢弄)  `tlmgr update --self --all;  tlmgr install scheme-full &` 
+
+- 进入网页端进行账号配置
+    - 执行以上第4步的时候就可以打开网站 `host:5000/admin`,建立管理员账户
+    - 在管理员账户里，可以新建用户，用户名必须是邮箱(但是貌似可以不是真实的)，设定上会把设置密码的邮件发送到邮箱中，但是实测没有收到，所以直接采用url的方式进行手动设定
+        - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211124211652.png)
+        - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211124211754.png)
+    - admin用户用了我自己的 `suozhang1998@gmail.com` 密码是个人用的密码
+    - 默认大家的share用户用了`nics-efc@temp.edu.cn`, 密码是 `nicsefc-overleaf`
+    - 从主机进入sharelatex的container不要用`docker attach`,而是用`docker exec -it sharelatex bash`, 前者可能会导致container卡死，必须restart才能进入
+
+- Setup中文支持
+    - 需要安装xfont的相关环境，执行`apt-get install xfonts-wqy`，而overleaf的docker container本身apt源没有换过，所以先从外面用`docker cp`将source.list拷贝进来
+    - 将win下的字体(`/mnt/c/Windows/Fonts`)打包(可以批量删除fot格式的 `rm -r *.fot`),并且拷贝且docker cp到container中
+    - 将Fonts移动到 `/usr/share/fonts`的目录下，进入该目录，并执行 `mkfontscale;  mkfontdir; fc-cache -fv`
+    - 最后检查中文字体是否安装成功 `fc-list :lang=zh-cn`
+
+- 如何使用中文编辑： 使用`xelatex`进行编译， 并且在文中加上 `\usepackage[UTF8]{ctex}`
+    - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211124195208.png)
+
 ---
 
+#  重启之后
+
+0. 看各种服务器，看IP，205上手动更新dns：`python /usr/local/bin/cloudflare_dns.py xxx ` 
+    - 螺母楼下 EVA0，1，2，3，7，13
+    - 螺母下老服务器 EOE0，EOE1: 注意eoe0的container貌似会自启动(EOE1的hostnam老变成eva5)
+    - 伟清楼 EVA   8，9，10， 余老板那边两台
+    - FPGA1，FPGA2
+    - EVA4(戴导那边管的)
+1. 各个服务器上执行 `sudo /usr/local/cuda/samples/1_Utilities/deviceQuery/deviceQuery`
+     - EVA 0,1,2,3: `sudo /opt/cuda/samples/1_Utilities/deviceQuery/deviceQuery`
+
+---
 
 # 相关素材
 

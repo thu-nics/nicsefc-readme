@@ -22,7 +22,7 @@
 | fpga2 | 10.4.205.42 | -       | 32 Intel Silver 4208 | -                         | 40G  | -        |
 | fpga3 | 10.4.205.43 | -       | 32 Intel Silver 4208 | -                         | 40G  | 2*U200   |
 | fpga4 | 10.4.205.44 | -       | 32 Intel Silver 4208 | -                         | 40G  | 2*U200   |
-| test0 | 10.4.205.90 | -       | 64 Intel Gold 6226R  | 2\*2080/3090/V100/AMD9100 | 250G | -        |
+| eva13 | 10.4.205.90 | -       | 64 Intel Gold 6226R  | 2\*2080/3090/V100/AMD9100 | 250G | -        |
 
 ## 硬件相关调试指南
 
@@ -37,6 +37,15 @@
      - （改成k3就是CPU，k4是内存，改成k5就是虚拟内存）
      - 有时候登录不上container，可能有原因是某个container出现了内存泄露，导致整个服务器被挤满了，这个时候只能上主机找到程序之后kill掉。(2021-10-14)
 
+2. 检查用户登录记录
+     - `last`: 直接查看该服务器的登录纪录
+
+3. 检查某个PID是否在Container内
+     - 进入`/proc/$pid/cgroups` 查看，如果在container中里面会写 `/lxc/xxx/...` 
+
+4. 查看某个进程的路径  `pwdx $PID`
+     - 该命令不能区分是否在container内，所以参考上面方法先查看pid的来源
+
 ### 修改container的rootfs大小
 
 ``` bash
@@ -48,7 +57,6 @@ resize2fs $ROOTFS_PATH ${NEW_SIZE}G
 lxc-start -n $ROOTFS_NAME
 
 ```
-
 
 ### LDAP php前端
 
