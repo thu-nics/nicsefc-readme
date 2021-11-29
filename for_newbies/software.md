@@ -17,8 +17,20 @@
 - SHELL就是传统意义上的 ”Linux命令行“(CLI - command line interface)，使用linux，请首先学会命令行
     - [IPADS新人培训第一讲：Shell-哔哩哔哩](https://b23.tv/8DIwrX)， 上交IPADS组的一个shell教程，非常推荐看一下，包含了一些command-line tools以及bash-scripts的使用
  
-- apt安装软件
+- apt安装软件，参考了[Ubuntu的官方tutorial]
     - 由于我们使用的是清华tuan源，所以理论并不需要准出也可以进行apt的软件安装
+    - `sudo apt-get update` 最常见的操作，在更新当前源下库的情况(但不会安装)
+    - `sudo apt-get upgrade`: **危险操作**不要执行，等效将当前源下的所有包更新到最新版本！会打破很多依赖
+    - `sudo apt-get check` 查看当前apt的情况
+    - `apt-get -f install` fix当前的umet dependencies(有一定危险性，建议查看存在umet的库是否涉及到比较通用的)
+    - `apt-get autoclean` 删除掉已经不用的deb包（默认位置在 `/var/cache/apt/archives`），可能可以清理出一些空间
+        - **注意：** 与之类似的`apt-get clean`是全部删除包
+    - `apt-get remove <package_name>` 清除某个包(remove换成purge则会递归删除掉所有它依赖的包，有一定危险性)
+    - `apt-get autoremove` 自动清除某些不被依赖的包
+    - `apt-cache search <search_term> /  dpkg -l *<search_term>*` 查找某个包, 比较常用，因为linux下的软件包的名字一般和我们想象的不太一样，可以通过模糊搜索来找到我们需要去install啥
+    - `apt-cache show <package_name>` 展示某个包的详细信息以及版本等等
+    - `dpkg-reconfigure <package_name>` 重新配置某个包
+
 
 ### Tmux
 
@@ -62,6 +74,24 @@ run -b '~/.tmux/plugins/tpm/tpm'
 
 1. [最强Vim新手指南，手把手教你打造只属于自己的代码编辑器！-哔哩哔哩](https://b23.tv/AQTlVZ)
     - 有一些标题党和浮躁，但是内容还比较适合入门
+
+2. (Tianchen Zhao)的Vim配置方法:
+
+安装vim以及Vundle(vim插件管理器)
+
+```
+sudo apt-get install vim git
+mkdir -p ~/.vim/bundle 
+git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim  # vim 插件管理器
+```
+
+获取[.vimrc](https://github.com/A-suozhang/WhatIveRead/blob/master/bak/vim/.vimrc)，放在`~`目录下。(该配置文件只配置了高亮颜色以及便捷注释插件(nerdcommenter)）
+更多方式可以进一步探索，并且在能够联网的环境下进入Vim，进入命令模式，输入`:PluginInstall`，执行完之后有报错，不用管，到下一步fix
+
+
+(fix一个语法高亮上的小bug： `~/.vim/bundle/molokai/colors/molokai.vim:line 132` 将"none"改成None，就正常了！)
+
+
 
 ## 2. Git(版本控制)
 

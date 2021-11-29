@@ -1,5 +1,7 @@
 # Trouble-Shooting
 
+> 本页面会持续维护一些大家使用服务器时用到的常见问题
+
 ## [1] -  CUDA相关
 
 > 服务器最常见问题是cuda用不了的情况，有时候smi不出东西，有时候`torch.cuda.is_available()`报错false，记住执行**deviceQuery**是解决问题的主要途径！(下面的1)
@@ -88,6 +90,9 @@
     - 对于一些rootfs，可能在换清华源之后运行`sudo apt update`时报错 ` Certificate verification failed: The certificate is NOT trusted. The certificate chain uses expired certificate.  Could not handshake: Error in the certificate verification. [IP: 101.6.15.130 443]`
         - 可以手动将/apt/source.list中的https改成http，然后运行`sudo apt update`即可成功，注意此时运行`sudo apt install ca-certificates`安装验证，然后改回https,这样更安全
         - 或者暂时用阿里云的源（不过阿里云的源不准出可能无法使用？）
+	- 对于一些相对较新版本的文件系统，我们预配置的apt(清华源)版本可能相对较老，导致出现诸如以下的 `dependecny error`的问题`,请不要尝试**自己手动修复这些包**,可能存在搞崩apt而导致系统报废的情况
+		- ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/b877a893d6913bbcdb33254340d6ac3.png)
+		- 上网查询新版本的其他mirror，如aliyun等进行替换
 
 
 
