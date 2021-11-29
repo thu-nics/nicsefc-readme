@@ -5,6 +5,9 @@
 - 我们组有Self-Host的overleaf以应对不时之需，可以在校内环境通过 `eva1.nics.cc:5000`来进行访问，共享用户用户名为 `nics-efc@temp.edu.cn`, 密码使用时请咨询网管或负责研究生
   - 添加中文编辑的支持： 使用`xelatex`进行编译， 并且在文中加上 `\usepackage[UTF8]{ctex}`
     - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211124195208.png)
+  - 导入或者备份项目的话直接选择 "Upload Project"
+    - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211125152750.png)
+
 
 # 常用网站
 
