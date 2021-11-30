@@ -11,14 +11,26 @@
 
 # 常用网站
 
+### Paper Reading & Summary
+
+- 查询[Software](./software.md)界面中的文献阅读工具
+- [Connected Papers](https://www.connectedpapers.com/) 构建文献图谱
+  - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211130102952.png)
+
+
 ### 文字
 
 * Grammarly： 我们组有**Grammarly**的shared账号，请垂询你的负责研究生
-* [Liggle](https://linggle.com/)
-* [Synonym](https://www.synonym.com/synonyms/)
-* [New Better Synonym](https://www.thesaurus.com/browse/optimize?s=t)
 * 有道翻译
 * [ESODA](http://www.esoda.org/)
+
+-  找同义词
+  * [Power Thesaurus](https://www.synonym.com/synonyms/)
+
+  * [Thesaurus](https://www.thesaurus.com/browse/optimize?s=t)
+
+  * [Liggle](https://linggle.com/)
+    - 在输入词前加`~`寻找同义词， linngle还支持其他的[Command Options](https://linggle.com/help/)
 
 ### Latex
 

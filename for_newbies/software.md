@@ -101,9 +101,44 @@ git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim  # v
 
 > 我们小组主要就是写python
 
-- MiniConda
-- Pip
-- PyTorch/Numpy
+### Conda
+
+> 我们的服务器的/opt 目录一般都保存了Miniconda的安装包可以直接使用
+
+1. 安装: 直接执行安装的sh文件即可
+
+2. 使用
+
+* ```conda create -n $NAME python=3.7```
+	* 最好直接在最后用python=3.7，这样会直接在当前环境下生成一个环境```miniconda3/envs/$NAME/bin/python```，更加不容易和global的python搞起来
+	* 然后pip应该也是安装到了对应位置不用修改，然后用```pip install ipython```
+	* 安装完成之后虽然```which ipython```正确，内容也正确，但是输入ipython还是global的 - 需要**decativate再重新登录虚拟环境以reload环境**
+* ```conda deactivate``` 退出现有环境
+* ```conda info -e``` 查看现有的环境
+* ```conda remove -n $NAME --all```
+* ```conda create -n $NEW --clone $OLD; conda remove -n $OLD --all```
+
+* 有的时候会出现无论操作什么都segmentation fault的情况(甚至重装conda以及更新conda)
+  * 这个是偶用```conda clean -a```来清楚本地的缓存(可能是因为中途网络错误导致状态崩颓)
+  * [居然是一个CSDN的blog救了我](https://blog.csdn.net/u012110870/article/details/103800701)
+
+* 如果需要rename一个env的话
+	* 需要复制一个新环境 ```conda create --name NEW_NAME --clone OLD_NAME```
+	* 然后删除老的环境 ```conda remove --name OLD_NAME --all```
+
+* 迁移整个conda环境
+    - 对于python环境的迁移，网络上的教程很多诉诸于`pip freeze / conda list --export > requirements.txt`,但是这种方式经常可能因为dependancy问题导致失败，这里建议： **使用conda-pack**打包整个conda环境。[教程参考](https://conda.github.io/conda-pack/)
+
+2. Trouble Shooting
+
+* 有的时候更新了环境之后会出现pip指向问题 (比如还是指向了base里面的pip，可以用`where pip`命令查看，某个env里的pip会在 `~/conda/envs/$env_name`当中)
+    * 这个时候decativate一下然后再activate就可了
+    * 由于$PATH内部.local/bin在conda/env/xxx的前面。所以优先调用了base环境下的ipython
+    * 检查bashrc的时候发现并没有.local/bin这个东西，然后发现是在~/.profile当中改动了$PATH，将.local/bin放到PATH的最后
+    * **基本conda环境中对不上的情况，包括pip和python，如果你执行了命令，实际调用的不是你预想的那个程序，都是$PATH的问题，其运行准则是优先匹配前面的**
+
+
+
 
 ## 4. 文献管理
 
