@@ -5,7 +5,7 @@
 - 当我们开始之前，我们假定你已经阅读完了本repo的readme和login相关文档(主要是[../for_newbies/software.md](../for_newbies/software.md))，并对linux系统以及命令有了一些初步的了解，如果没有，请加以了解。
 - 这个repo的目的在于介绍一些基础常用的知识，以及杜绝一些危险操作，毕竟即使是一个container中也会有合作同学，虽然网管能够将你的container进行重置，但是可能丢失的环境以及数据难以找回。请大家**注意定期保存实验数据**并**杜绝危险操作**。
 
-## 你需要的一些LInux Basic Knowledge
+## 你需要的一些Linux Basic Knowledge
 
 - linux基础操作:
     - 在linux下 `ctrl+s` 下屏幕会freeze住，输入的指令**实际上是起效的**，只是不会显示，按q可以退出该模式
@@ -89,6 +89,25 @@
         - 需要将cuda的对应库的位置加到LD_LIBRARY的环境变量中 `export LD_LIBRARY_PATH="/opt/cuda/lib64:$LD_LIBRARY_PATH"`
     - 如果你有特殊的CUDA-DRIVER的需求，请联系网管协助安装
     - 由于我们的container管理方式，大家共享一份硬件资源，所以在container内部使用nvidia-smi并不能看到实际占用显卡资源的pid，可以在`/opt/nvidia.log`文件中查询到每分钟更新的当前显卡占用情况的pid以及对应程序详情。
+    - cuDNN的安装与版本检查
+        - 确认cuDNN是否已经安装
+            - 通过`which nvcc`命令查看cuda安装路径，下面以路径是`/usr/local/cuda/`为例。
+            - 查看`/usr/local/cuda/include/`下是否有cudnn.h文件。
+            - 查看`/usr/local/cuda/lib64/`下是否有libcudnn*等文件。
+        - cuDNN的安装
+            - Step 1: 注册nvidia developer账号，然后在[这里](https://developer.nvidia.com/cudnn)下载cudnn到服务器本地文件夹。注意根据当前的cuda版本来选择对应的cudnn，查看cuda版本的命令为`nvcc --version`。
+            - Step 2: 查看cuda的安装路径。eva机器上通常在`/opt/cuda/`，建议使用前述的软连接方式进行cuda位置的标准化，标准化后为`/usr/local/cuda/`。如果找不到cuda安装位置，可以通过`which nvcc`命令查看。
+            - Step 3: 将下载解压后的文件复制到cuda安装路径下（这里以`/usr/local/cuda/`为例）：
+            ```
+            cd your/cudnn/folder
+            sudo cp include/cudnn.h /usr/local/cuda/include
+            sudo cp lib64/libcudnn* /usr/local/cuda/lib64
+            sudo chmod a+r /usr/local/cuda/lib64/libcudnn*
+            ```
+        - cuDNN的版本检查（这里以cuda路径为`/usr/local/cuda/`为例)
+        ```
+        cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2
+        ```
 
 2. 可以从/opt目录拷贝一些常用文件过来，注意该目录的scp需要sudo权限
 
