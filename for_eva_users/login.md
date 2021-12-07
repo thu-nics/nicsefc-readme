@@ -171,7 +171,7 @@
 - 对于Linux或者是Mac， 你可以直接在Terminal中完成以上操作：
     - (本质上是因为windows的cmd下的ssh并没有提供`ssh-copy-id`命令，所以需要手动处理)
     - `ssh-keygen -t rsa -b 4096`
-    - `ssh-copy-key -i id_rsa.pub ztc-eva7` 并遵从引导，输入密码，并且再次尝试登录
+    - `ssh-copy-id -i id_rsa.pub ztc-eva7` 并遵从引导，输入密码，并且再次尝试登录
 
 
 ### ssh转发图形界面

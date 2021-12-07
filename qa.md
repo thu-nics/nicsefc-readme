@@ -17,7 +17,7 @@
 - 如果报错了`ERROR_CODE=999`的话，截图并联系网管(在nicsefc-server群里)，帮你在主机上执行一次deviceQuery(理论上服务器断电重启之后会需要这么做)
 - 如果再出现了别的错误，可以先google一下报错指令，如果没有解答的话联系网管
 
-### 2. deviceQuery能够PASS，但是之后nvidia-smi很慢
+### 2. deviceQuery能够PASS，但是之后nvidia-smi很慢 / 显卡存在高空载功耗
 
 - sudo运行`/usr/local/nvidia/bin/nvidia-persistenced`
 
@@ -93,8 +93,6 @@
 	- 对于一些相对较新版本的文件系统，我们预配置的apt(清华源)版本可能相对较老，导致出现诸如以下的 `dependecny error`的问题`,请不要尝试**自己手动修复这些包**,可能存在搞崩apt而导致系统报废的情况
 		- ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/b877a893d6913bbcdb33254340d6ac3.png)
 		- 上网查询新版本的其他mirror，如aliyun等进行替换
-
-
 
 ## [5] - Container维护相关
 

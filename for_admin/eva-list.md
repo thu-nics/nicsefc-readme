@@ -24,18 +24,29 @@
 | fpga3 | 10.4.205.43 | -       | 32 Intel Silver 4208 | -                         | 40G  | 2*U200   |
 | fpga4 | 10.4.205.44 | -       | 32 Intel Silver 4208 | -                         | 40G  | 2*U200   |
 
-## 硬件相关调试指南
+# 调试技巧
+
+## 0. 重启服务器之后
+
+1. 需要重新准入当前的IP
+2. 需要在主机上执行deviceQuery
+3. 对于某些服务器重启之后所有container都会启动，需要手动关闭
+
+## 1. 硬件相关调试指南
 
 1. 由于config文件中一般默认选取下面一个网口，config文件中默认写的位置，如果换网口会导致container拿不到IP
      - eva0/1/2/3比较特殊，他们有4个物理网口，其中`eno0/1`是显卡中间的两个网口，`ensp`是主机上的
      - 对于网口规则，对于老的的主机式EOE，接上面的网口； 对于eva服务器，遵从左上原则(目前只有eva7和fpga是用的左边的网口)
 
+## 2. 软件相关调试指南
 
-## 软件相关调试指南
+### 2-1: 服务器维护相关(程序)
 
-1. 使用Top命令，以及`ps auxw|head -1;ps auxw|sort -rn -k4|head -10 `
+> 出现过许多次某个程序卡死 / 挖矿程序等情况，导致服务器不正常
+
+1. 使用Top命令确定当前服务器上进程情况， Example: `ps auxw|head -1;ps auxw|sort -rn -k4|head -10 `
      - （改成k3就是CPU，k4是内存，改成k5就是虚拟内存）
-     - 有时候登录不上container，可能有原因是某个container出现了内存泄露，导致整个服务器被挤满了，这个时候只能上主机找到程序之后kill掉。(2021-10-14)
+     - 📆: 登录不上container(从主机也attach不进去)，可能有原因是某个container出现了内存泄露，导致整个服务器被挤满了，这个时候只能上主机找到程序之后kill掉。(2021-10-14)
 
 2. 检查用户登录记录
      - `last`: 直接查看该服务器的登录纪录
@@ -46,7 +57,13 @@
 4. 查看某个进程的路径  `pwdx $PID`
      - 该命令不能区分是否在container内，所以参考上面方法先查看pid的来源
 
-### 修改container的rootfs大小
+### 2-2: 服务器维护相关(登录)
+
+-  ping得通，但是ssh登录不上： **准入问题**
+- ping得通，甚至能够现实输入密码，但是始终Perimssion Denied，确认不是输错密码的情况下，可能是原本的container网络fail掉了，这个IP被更新给了其他的服务器，而我们的DNS由于没有更新仍然显示老IP，这种情况大概率是主机fail掉了，要确认主机是否fail掉了，登陆上其他服务器，通过tinc内网来尝试ssh上去，比如`ssh 10.4.205.1*`,确认服务器是否物理网络fail掉，还是校园网抽风
+- 准入出现问题，诸如不在DHCP表中等等，大概率都是校园网抽风了，等待一段时间
+
+### 2-3: 修改container的rootfs大小
 
 ``` bash
 
@@ -58,7 +75,40 @@ lxc-start -n $ROOTFS_NAME
 
 ```
 
-### LDAP php前端
+- 注意这里的**G是一定要加的**否则truncate的命令可能会有问题，可以使用`truncate -s +100G /data/xxx`这样的方式，会更安全一些。之后的一步也改成 `resize2fs /data/xxx`
+
+
+### 2-4: 修改base的rootfs template
+
+* 简单的方式：
+     - 就将这rootfs文件挂载到某个目录下`mount rootfs /media/rootfs`,然后chroot到`chroot /media/rootfs`,进行修改文件系统，然而该种方式可能存在不能使用apt安装库的方式
+
+- 合理的方式：
+     * 由于lxc可以在`/var/lib/lxc`中直接修改配置以及rootfs,所以直接在该目录下新建一个sandbox文件夹，并且拷贝一份其他container的config文件过来(修改name，rootfs的位置，以及网卡的hwaddr，否则会报错address already in use)，并且将需要修改的rootfs软连接到这里来。直接lxc-attach进这个container进行修改。
+
+![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210909125956.png)
+
+### 2-5：服务器之间迁移Container
+
+- 直接拷贝整个`/var/lib/lxc/xxx` 整个文件夹(包括了config以及rootfs文件)到新的服务器，并**修改config**
+     - 检查虚拟的网卡HW ADDR，如`lxc.net.0.hwaddr = 00:15:04:25:e7:47`,其中最后两位有意义，e7表示了eva7(d表示了eoe)，而47表示了在eva7上被构建的第47个container，当迁移到新服务器中**这两条都要修改**
+     - 进入Container，**修改hostname**，确认`/etc/hosts; /etc/hostname; hostnamectl status`,更新container的hostname，否则可能会导致域名服务的混乱（当出现了两个ztc.eva7的时候，dns解析只会对应到一个）
+
+### 2-6：修改服务器Route规则
+
+-  在ubuntu18.04之后由于route规则的改变，route规则会将`10.0.3.1`的一条放在首条，导致在外面无法登录，甚至完全无法ping通(即使准入)
+     * 通过修改不同ip route规则的metric可以解决:，在`/etc/networkd-dispatcher/routable.d`中添加了一个脚本，内容为`ifmetric eth1 200` (通过ifmetric库实现，需要加到我们的默认rootfs里)，这个脚本将eth1(主机上由lxc-bridge所产生的虚拟网卡的route)优先级变低，metric的值越高就越不优先，需要安装`ifmetric这个package`（通过修改rootfs安装）
+
+### 2-7： 磁盘相关的问题
+
+- 我们的Conatiner磁盘规划有一个问题是：构建container的时候其实没有限制，有的时候会忘记而导致**磁盘超发**，
+     - 在`/var/lib/lxc/xxx` 中看rootfs的文件的size，是container实际被使用的大小，而不是rootfs大小的上限，所以如果超发了，到某个时刻才用满
+     - 特定container的大小，得进入Container执行`df -kh`才能知道
+- 📆：由于**磁盘超发**，导致某container的磁盘写错误而导致变成readonly filesystem,(会直接显示整块磁盘满了，但是实际上它没满)，直接停止该硬盘上的所有container，并umount且运行磁盘检(`fsck`)，并进行搬运。
+
+## 3. 其他Tool的使用
+
+### 3-1: LDAP php前端
 
 1. 搭建在205主机的80端口上，目前个人的解决方法是映射到本机的`12888`端口上，并在Chorme浏览器中下载插件`Modheader`插件，添加`ldap.nics.cc`,应该能够打开一个php的界面(注意不要挂梯子)
 
@@ -71,8 +121,16 @@ lxc-start -n $ROOTFS_NAME
 3. 进入用户界面，注意可以修改用户名密码，但是不能看到密码
       - 修改用户名的注意cn，username以及home目录位置都需要修改   
 
+### 3-2: 网站相关
 
-## 强制调试
+- 更方便的方式直接使用 `https://nicsefc.ee.tsinghua.edu.cn/nicsadmin/signup.html`
+     - 输入注册
+     - 默认密码 **口口相传**
+     - 验证问题 **口口相传**
+- 网站的后台权限控制，进入 `Authorization`，搜索用户修改权限
+     - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211107205735.png)
+
+## -1. 强制调试
 
 > 2021-0928，在调试nslcd时候出现了大问题，将用户系统直接搞崩溃，让服务器完全无法登录，主机的sudo也被破坏
 
@@ -82,38 +140,5 @@ lxc-start -n $ROOTFS_NAME
 
 # Trouble Shooting for admin
 
-1. ping得通，登录不上
-     - 大概率是因为在罗姆楼所以能ping通，但是登录不上
-2. 登录的上205，但是ping服务器完全不出东西
-     - 大概是205正在进行域名更新，稍等几min
-3. 在服务器主机上进行了网络相关操作之后发现ping不通过各种东西
-     - 不用急着重启，可能只是**准入被搞坏了，重新准入一下**
-4. 登录不上container
-     * 有时候可能是某个container出现了内存泄露，导致整个服务器被挤满了，这个时候只能上主机找到程序之后kill掉。(2021-10-14)
-5. 磁盘问题：
-     * 由于磁盘超发，导致某container的磁盘写错误而导致变成readonly filesystem,(会直接显示整块磁盘满了，但是实际上它没满)，直接运行磁盘检查，并进行搬运。
+## 服务器登录不上了
 
-
-# 其他管理 - 网站
-
-## 注册新用户
-
-- Win下： 修改host文件，加上这一条
-     - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211107205317.png)
-- 在插件中添加一条request head(注意之后与LDAP的服务进行切换)
-     - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211107205430.png)
-- (由于我配置了端口转发，访问这个url，下面这个更稳定)
-     - `http://nicsefc_old.ee.tsinghua.edu.cn:12888/internal/auth/login/?next=/internal/`
-     - `http://nicsefc_old.ee.tsinghua.edu.cn:12888/internal/auth/signup/`
-
----
-
-- 更方便的方式直接使用 `https://nicsefc.ee.tsinghua.edu.cn/nicsadmin/signup.html`
-     - 输入注册
-     - 默认密码 **口口相传**
-     - 验证问题 **口口相传**
-
-## 新网站后台权限控制
-
-- 进入 `Authorization`，搜索用户修改权限
-     - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211107205735.png)
