@@ -27,6 +27,7 @@
         - **注意：** 与之类似的`apt-get clean`是全部删除包
     - `apt-get remove <package_name>` 清除某个包(remove换成purge则会递归删除掉所有它依赖的包，有一定危险性)
     - `apt-get autoremove` 自动清除某些不被依赖的包
+    - `apt list -a $name` 列举出某个包的所有版本
     - `apt-cache search <search_term> /  dpkg -l *<search_term>*` 查找某个包, 比较常用，因为linux下的软件包的名字一般和我们想象的不太一样，可以通过模糊搜索来找到我们需要去install啥
     - `apt-cache show <package_name>` 展示某个包的详细信息以及版本等等
     - `dpkg-reconfigure <package_name>` 重新配置某个包
