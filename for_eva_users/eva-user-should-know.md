@@ -39,6 +39,7 @@
      - 编辑准许登陆名单文件(注意需要sudo) `sudo vim /etc/login.user.allow` 将他人的**实验室账号用户名**添加到该文件中并保存。对于sudo权限，同样使用sudo编辑`sudo vim /etc/sudoers`参照里面已有的模板修改
         - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210923194748.png)
      - 关于sudo权限，网管的建议是谨慎给与，仅较相关且长期(频繁)使用Container sudo权限的才给
+        - 🚫: 注意当你改动 **/etc/sudoers** 给其他用户添加sudo权限的时候，一定不能 **sudo chmod 777 /etc/sudoers**,会导致sudo系统的崩溃！如果遇到保存提示 `readonly file`,在vim中使用 `:w!`命令进行强制保存，并`:q`退出
      - 另外，实验室**严令禁止**随意共享实验室账号密码的行为，基本的切换用户需求有其它办法做到(参考本部分第二条)
 
 2. 同一个container访问他人目录/使用他人账号
@@ -60,6 +61,8 @@
 3. `/opt/`和`/usr/local/nvidia/bin`中的文件是大家共用的，尤其不要尝试修改或不小心给改了。`/opt/`中的cuda是cuda链接库，并非cuda driver，但改了也有可能影响别人。不过如果你是用conda装pytorch等软件时，选了cuda版本，提示下载安装某个版本的cudatoolkit，则是另外下载一份pytorch自己用的链接库，与`/opt/`里的其实没有关系。
 4. (对于你自己的Container)，如果出现了apt安装某些很常见的库报错了，depedency不满足，首先请换一个source.list试试，**不要去对apt各种修改**
 5. 当你需要拷贝，搬运，产生大数据集与文件时候，请优先将其放到`eva_share`的空间，这**不会占用你的Container的空间**，请预先运行`df -kh`以确定当前Container/Eva_share的空间足够放下你所需要的文件。
+6. 注意当你改动 **/etc/sudoers** 给其他用户添加sudo权限的时候，一定不能 **sudo chmod 777 /etc/sudoers**,会导致sudo系统的崩溃！如果遇到保存提示 `readonly file`,在vim中使用 `:w!`命令进行强制保存，并`:q`退出
+
 
 ---
 

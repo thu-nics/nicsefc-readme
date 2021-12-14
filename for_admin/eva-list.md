@@ -68,14 +68,15 @@
 ``` bash
 
 lxc-stop -n $ROOTFS_NAME
-truncate -s ${NEW_SIZE}G $ROOTFS_PATH
+truncate -s +${NEW_SIZE}G $ROOTFS_PATH
 e2fsck -f $ROOTFS_PATH
-resize2fs $ROOTFS_PATH ${NEW_SIZE}G
+resize2fs $ROOTFS_PATH 
 lxc-start -n $ROOTFS_NAME
 
 ```
 
 - 注意这里的**G是一定要加的**否则truncate的命令可能会有问题，可以使用`truncate -s +100G /data/xxx`这样的方式，会更安全一些。之后的一步也改成 `resize2fs /data/xxx`
+     - 📆: 2021-11, ztc因为在扩容Container的时候没有用加号和G，导致将container变成了100B，并且没有及时fix磁盘问题，导致container报废。
 
 
 ### 2-4: 修改base的rootfs template
@@ -105,6 +106,25 @@ lxc-start -n $ROOTFS_NAME
      - 在`/var/lib/lxc/xxx` 中看rootfs的文件的size，是container实际被使用的大小，而不是rootfs大小的上限，所以如果超发了，到某个时刻才用满
      - 特定container的大小，得进入Container执行`df -kh`才能知道
 - 📆：由于**磁盘超发**，导致某container的磁盘写错误而导致变成readonly filesystem,(会直接显示整块磁盘满了，但是实际上它没满)，直接停止该硬盘上的所有container，并umount且运行磁盘检(`fsck`)，并进行搬运。
+
+### 2-8: 开机自启动
+
+> 在ubuntu 16以及18以及20都采用了不同的自启动方式，20.04用systemd，需要改动的内容较多，在此记录
+
+1. 修改systemd中的rc-local的服务 `vim /lib/systemd/system/rc-local.service`，在末尾加上
+
+```
+[Install]
+WantedBy=multi-user.target
+Alias=rc-local.service
+```
+
+2. 创建rc.local文件并给其可执行权限 `vim /etc/rc.local; chomd a+x /etc/rc.local`
+
+3. 加入需要启动的东西，记得要加上`!#/bin/bash`,然后最好加一个文件流重定向来检查是否成功 `echo "XXX" /usr/local/autostart.log`, 注意最后一定要加`exit 0`
+
+4. 创建软连接(enable服务) `ln -s /lib/systemd/system/rc-local.service /etc/systemd/system`
+     - 这个步骤和`systemctl enable rc-local.service`等效
 
 ## 3. 其他Tool的使用
 
