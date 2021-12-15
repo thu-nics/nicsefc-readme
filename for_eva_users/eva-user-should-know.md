@@ -27,6 +27,8 @@
     - 下载和安装 `apt-get install rsync`
     - 代替 cp 进行复制的使用方式 `rsync -avP source/folder destination/` 可以将 source/folder 文件夹移动到 destination/folder，其中，`-v` 使得移动式会输出各种信息
         - `--info=progress2` 可以以总进度条的方式输出传输进度，但是需要先等待 rsync 扫描完毕需要传输的文件夹大小
+            - 例如使用 `rsync -a --info=progress2 source/folder destination/`
+    - 如果需要传输到别的服务器，只需要在目标路径使用格式 `<用户名>@<服务器>:<路径>` 即可
 
 - 压缩tar
     - 压缩 `tar -czf target.tar.gz file1 file2 file3` 
