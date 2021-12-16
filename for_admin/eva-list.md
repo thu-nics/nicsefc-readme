@@ -58,10 +58,15 @@
 
 4. 查看某个进程的路径  `pwdx $PID`
      - 该命令不能区分是否在container内，所以参考上面方法先查看pid的来源
+     - 查看某个用户的使用 `top -u $USERNAME`
+
+5. 查看磁盘IO
+   * 现象: vim保存文件卡顿，但是tmux切换窗口不卡顿
+   * 使用`iotop`命令，可能需要手动安装一下，在container内部是会报OSError，需要主机上的sudo权限
 
 ### 2-2: 服务器维护相关(登录)
 
--  ping得通，但是ssh登录不上： **准入问题**
+- ping得通，但是ssh登录不上： **准入问题** (一般情况都可以先问下准入是否成功，跳出"登录成功"，或者是空白其实都属于正常)
 - ping得通，甚至能够现实输入密码，但是始终Perimssion Denied，确认不是输错密码的情况下，可能是原本的container网络fail掉了，这个IP被更新给了其他的服务器，而我们的DNS由于没有更新仍然显示老IP，这种情况大概率是主机fail掉了，要确认主机是否fail掉了，登陆上其他服务器，通过tinc内网来尝试ssh上去，比如`ssh 10.4.205.1*`,确认服务器是否物理网络fail掉，还是校园网抽风
 - 准入出现问题，诸如不在DHCP表中等等，大概率都是校园网抽风了，等待一段时间
 
@@ -91,16 +96,40 @@ lxc-start -n $ROOTFS_NAME
 
 ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210909125956.png)
 
+- 在eva1上进行测试搭建了mark0 container，绑定了eva1上的新rootfs，以后请从这里进行cp
+
 ### 2-5：服务器之间迁移Container
 
 - 直接拷贝整个`/var/lib/lxc/xxx` 整个文件夹(包括了config以及rootfs文件)到新的服务器，并**修改config**
      - 检查虚拟的网卡HW ADDR，如`lxc.net.0.hwaddr = 00:15:04:25:e7:47`,其中最后两位有意义，e7表示了eva7(d表示了eoe)，而47表示了在eva7上被构建的第47个container，当迁移到新服务器中**这两条都要修改**
      - 进入Container，**修改hostname**，确认`/etc/hosts; /etc/hostname; hostnamectl status`,更新container的hostname，否则可能会导致域名服务的混乱（当出现了两个ztc.eva7的时候，dns解析只会对应到一个）
 
+### 2-5.5 迁移老服务器成EOE
+
+> revive的老服务器将以EOE命名，参考量产机，又名End Of Evagelion，表示退役之后重新加入使用的Eva
+> EOE系列的container的Mac地址中的倒数第二个字节(2个16进制数)，为`dN`的形式，为了与eva的`eN`区分开，否则会造成dhcp错误
+> EOE系列的tinc地址，将从`10. 4.205.50`开始进行排列(tinc-up与tinc-down中)
+
+* [2021-09-11] 尝试将老eva7(现EOE-0)进行复活的时候，由于没有修改lxc config，导致container与新eva7的container中share了硬件hwaddr，从而导致DHCP步骤出错，让同一个ip地址被两个虚拟lxc环境，登录时出错： 
+  * ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210911195914.png)
+* 需要修改lxc-config中的两个位置的hw-addr:
+  * ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210911202514.png)
+  * 我们一般的rule是e7表示eva7； f0表示eva0； 对eoe0，我暂时改成了d0。
+  * `for name in `lxc-ls`; do sed -i "s/e5/d1/g" ./$name/config; done`
+  * 完成了这一步理论上就可以正常登录了(用绝对IP)
+* **目前对于eoe0只对了最新的wcy container进行了修改，如果老container需要起来的话，也需要做类似的操作，但是目前还没做**
+* 为了让域名等生效，还需要配置好tinc以及dns，参考[凯哥的网管总结 - 网络配置](https://www.yuque.com/doctor-kaizhong/lab-network/lo5q51)中的整个流程
+  * 修改hostname: 需要修改 `/etc/hostname` 以及 `/etc/hosts` ，使用hostname命令就可以看到hostname，由于实验室用到了tinc服务，在`/etc/tinc/tinc.conf`中也做修改，通过tinc将新的域名组推到205中，便于205上的DNS服务器更新域名解析。
+* 即便最后`service tinc status`显示tinc-up有`exit with error code2`，但是能够正常的ping通`10.4.205.1`(205主机的ip)，暂时没有问题了；以及执行过了crontab脚本中将信息从tinc推送到205部分逻辑，也是ok的。
+* 已经建立好的container的hostname，进入文件系统直接修改`/etc/hostname`这个是建立container的时候就确定的，在`fork_lxc_new.py`文件中，使用了`socket.gethostname()来获取本机的hostname`，下面一段逻辑是创建container的时候，将这些信息写入到了template_rootfs的`/etc`所对应的文件中
+  * ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210911203937.png)
+
 ### 2-6：修改服务器Route规则
 
 -  在ubuntu18.04之后由于route规则的改变，route规则会将`10.0.3.1`的一条放在首条，导致在外面无法登录，甚至完全无法ping通(即使准入)
      * 通过修改不同ip route规则的metric可以解决:，在`/etc/networkd-dispatcher/routable.d`中添加了一个脚本，内容为`ifmetric eth1 200` (通过ifmetric库实现，需要加到我们的默认rootfs里)，这个脚本将eth1(主机上由lxc-bridge所产生的虚拟网卡的route)优先级变低，metric的值越高就越不优先，需要安装`ifmetric这个package`（通过修改rootfs安装）
+      * 这个脚本将eth1(主机上由lxc-bridge所产生的虚拟网卡的route)优先级变低，metric的值越高就越不优先
+      * 该操作依赖`ifmetric`，直接用apt安装即可，对比较新的container rootfs我们已经预装好了这个包
 
 ### 2-7： 磁盘相关的问题
 
@@ -127,6 +156,19 @@ Alias=rc-local.service
 
 4. 创建软连接(enable服务) `ln -s /lib/systemd/system/rc-local.service /etc/systemd/system`
      - 这个步骤和`systemctl enable rc-local.service`等效
+     
+ ### 2-9. 自动化保持准入状态 - (Crontabs)
+
+* 入网的脚本auth-linux我放在205的`/home/eva_share`下了，之后可以从这里scp，以及跳板机上`scp -P 42222 zhaotianchen@101.6.64.67:/home/eva_share/auth-thu.linux.x86_64 ./`，并且在最新的rootfs直接放在了文件系统的`/home/resource`中
+* 写了一个auth-thu对应的config，然后只要直接执行./auth就可以了，另外写一个crontab定时执行，可以一直保持”准出“状态
+  * [19. crontab 定时任务 — Linux Tools Quick Tutorial (linuxtools-rst.readthedocs.io)](https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/crontab.html)
+  * 本方案存在以下问题： 每个校园网账号的准出设备有限，让服务器一直占着不太好； 以及config中需要存明文密码，安全性欠佳，所以**准出建议还是手动做**
+
+* 对于一直保持准入，可以：写一个crontab脚本 `ping info.tsinghua.edu.cn` 让它一直在内网中, and use the ztc.eva7.nics.cc to login
+
+* 创建一个脚本之后，`crontab $FILENAME`,之后`contab -l`查看什么正在执行
+  * `crontab -e `直接编辑
+  * `crontab -r` 删除
 
 ## 3. 其他Tool的使用
 

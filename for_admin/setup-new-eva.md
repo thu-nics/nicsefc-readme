@@ -324,6 +324,11 @@ ps -up `/usr/local/nvidia/bin/nvidia-smi -q -x | grep pid | sed -e 's/<pid>//g' 
 1. 目前启动container所用的rootfs在主机的`/home/work/lxc/base-rootfs`下，如果想要简单修改内部文件的话，直接将其mount到主机某个目录，如`/media/rootfs`,然后chroot进这个目录进行修改
 
 
+# 修正rootfs
+
+1. 目前启动container所用的rootfs在主机的`/home/work/lxc/base-rootfs`下，如果想要简单修改内部文件的话，直接将其mount到主机某个目录，如`/media/rootfs`,然后chroot进这个目录进行修改
+
+
 
 # 其他一些有趣的配置
 

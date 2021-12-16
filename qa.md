@@ -70,7 +70,9 @@
 2. 使用auth-thu进行校内校外之间的切换:
     - [auth-thu脚本的官方repo](https://github.com/z4yx/GoAuthing)
     - [auth-thu的使用指南](https://thu.services/services/)
-    - 去[release页面](https://github.com/z4yx/GoAuthing/releases)下载对应平台的脚本可执行文件，并且通过scp(或者其他方式)将这个脚本上传到服务器(你只要能登录服务器就能scp，很多服务器的`/opt`目录已有该软件
+    - How2Get
+        - 去[release页面](https://github.com/z4yx/GoAuthing/releases)下载对应平台的脚本可执行文件，并且通过scp(或者其他方式)将这个脚本上传到服务器(你只要能登录服务器就能scp，很多服务器的`/opt`目录已有该软件
+        - 我们拷贝了一份在205的跳板机上，可以在服务器上拷贝 `scp -P 42222 $USERNAME@101.6.64.67:/home/eva_share/auth-thu ./`
     - 在服务器上调用`./auth-thu.linux.x86_64 $COMMAND`
         - $COMMAND如果是auth/deauth 表示准入上线、下线
         - 如果是login/logout则表示准出上线、下线

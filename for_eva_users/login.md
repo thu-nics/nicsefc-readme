@@ -15,7 +15,7 @@
 
 ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210919202335.png)
 
-5. 校园网：因为各种不可抗力，这个步骤居然是我们登录服务器**最困难**的部分(也是最为个性化的部分)。由于校园网需要**准入IP**才能让服务器可以被访问，所以与一般的登录服务器不同，在登录校园网内的服务器的时候，需要**先准入IP，再正常使用ssh登录服务器**。
+5. 校园网：因为各种不可抗力，这个步骤居然是我们登录服务器**最困难**的部分(也是最为个性化的部分)。由于校园网需要**准入IP**才能让服务器可以被访问，所以与一般的登录服务器不同，在登录校园网内的服务器的时候，需要**先准入IP，再正常使用ssh登录服务器**。准入中可能会遇到一些问题，请参考[../qa.md](../qa.md)
     - 具体的准入方法,登录[usereg.tsinghua.edu.cn](http://usereg.tsinghua.edu.cn/), 登录自己的账号，并且选中"准入代认证"，填入你需要准入的服务器IP与密码(你的校园网账户的密码)，选择“校内”或“校外”，进行登录。如果显示“登录成功”，那么说明此操作成功了。如果显示**空白**或是**IP不在DHCP表中**，说明是报错信息，可查看[../qa.md](../qa.md)
     - 我们先重申几个概念，请记住他们的含义，方便大家的交流与沟通：
         - 准入:  对应着“准入待认证”中选择“校内”选项，表示将对应的IP **加入校园网，使其可以在校园网内网被访问**，注意：**此操作是登录上服务器的必要条件**，且**不代表服务器能够连接外网(这个是准出所作的事情)**。一个校园网账户理论上可以同时准入无上限个IP。
@@ -50,8 +50,8 @@
 ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210919204219.png)
 
 一样可以登录，这样就不用记一串没有含义的数字了。且需要注意的是，服务器的IP可能会动态改变，但是域名不会改变，改变后的IP会被我们实验室的域名服务自动映射，所以除了Container刚建立时域名还没有同步的时候采用IP登陆以外，其他时候采用类似`ztc.eva7.nics.cc`这样的域名登陆即可。**只要服务器处于准入状态，那么你只要一直使用这个命令就可以登录了**)
-
 - 📍：注意：Container的域名是 `ztc.eva7.nics.cc` 这样的，而`eva7.nics.cc` 是eva7的主机，两者**具有独立的域名与IP**，一般用户无法登录，会报错Permission Denied。**一般情况下**，用户只需要登录如`ztc.eva7.nics.cc`的container即可。(除了Eva13，fpga等没有配置Container隔离的机器，在这些机器上，大家都是登录主机)
+
 
 3. 看，登录服务器就是这么简单！直接执行`ssh username@xxx.evax.nics.cc`就可以登录，发现登录不上，就去用`ping`找一下IP，然后在usereg中准入一下就可以了呢！其实你使用其他ssh软件，本质上就是以不同的GUI执行了这个操作，由于terminal是最为简单且快捷的方式，所以之后在**登录不上debug的时候，请使用terminal进行测试**
 
@@ -123,8 +123,8 @@
 
 - 当然可以！这就是ssh config文件的作用！通过撰写一个config文件，去简化命令。
 - 对于Linux系统，编辑`~/.ssh/config`文件(如果没有，就自己创建一个)
-    - 如果你不知道`~`这个目录是什么意思，你需要补一下Linux基础，这里告诉你是`/home/username`的意思
-- 我们以登录205服务器为例，撰写一条config，并尝试`ssh 205`，看看能不能登录了？
+    - 如果你不知道`~`这个目录是`/home/$username`的意思
+- 我们以登录205服务器为例，撰写一条config，并尝试`ssh 205`.
     - Host： 可以任意定义，这台服务器的别名，我们这里是205，所以你的测试命令将会是`ssh 205`
     - HostName: 域名或者是IP，这里是`101.6.64.67`对于其他服务器，可以是`ztc.eva7.nics.cc`
     - User: 表示登录服务器所用的用户，是你的服务器账户名字
@@ -198,7 +198,8 @@
     - 比如我们的V2ray客户端中就可以设置http-proxy开在本地的10809端口
         - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211013132726.png)
 
-1. 确定你的梯子的服务开在哪个端口，比如我的http-10809端口
+1. 确定你的梯子的服务开在哪个端口，比如我的http-10809端口,socks5 - 10808端口
+    - 在bashrc中添加 `alias setproxy="export http_proxy=http://127.0.0.1:10809; export https_proxy=$http_proxy; echo 'HTTP Proxy on';"`
 2. 在ssh登录config中指定remoteForward
     - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211013133103.png)
     - 这条指令的目的是将你的本地10809端口映射到远端的10809端口，让服务器端用本地梯子
@@ -211,3 +212,5 @@
     - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211013133336.png)
     - 直接下载google的网页作为测试，如果成功了，现象应该是这样
     - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211013133443.png)
+
+- 为特定的软件设置代理 / 设置linux全局代理，参考[Zhihu文章](https://zhuanlan.zhihu.com/p/58690128)

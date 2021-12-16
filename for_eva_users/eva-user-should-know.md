@@ -26,6 +26,9 @@
     - 使用 rsync 代替 cp 可以在迁移大文件的时候看到进度，并支持断点续传功能
     - 下载和安装 `apt-get install rsync`
     - 代替 cp 进行复制的使用方式 `rsync -avP source/folder destination/` 可以将 source/folder 文件夹移动到 destination/folder，其中，`-v` 使得移动式会输出各种信息
+        - `--info=progress2` 可以以总进度条的方式输出传输进度，但是需要先等待 rsync 扫描完毕需要传输的文件夹大小
+            - 例如使用 `rsync -a --info=progress2 source/folder destination/`
+    - 如果需要传输到别的服务器，只需要在目标路径使用格式 `<用户名>@<服务器>:<路径>` 即可
 
 - 压缩tar
     - 压缩 `tar -czf target.tar.gz file1 file2 file3` 
@@ -63,8 +66,6 @@
 5. 当你需要拷贝，搬运，产生大数据集与文件时候，请优先将其放到`eva_share`的空间，这**不会占用你的Container的空间**，请预先运行`df -kh`以确定当前Container/Eva_share的空间足够放下你所需要的文件。
 6. 注意当你改动 **/etc/sudoers** 给其他用户添加sudo权限的时候，一定不能 **sudo chmod 777 /etc/sudoers**,会导致sudo系统的崩溃！如果遇到保存提示 `readonly file`,在vim中使用 `:w!`命令进行强制保存，并`:q`退出
 
-
----
 
 # 环境配置
 
