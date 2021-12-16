@@ -5,7 +5,7 @@
 - 当我们开始之前，我们假定你已经阅读完了本repo的readme和login相关文档(主要是[../for_newbies/software.md](../for_newbies/software.md))，并对linux系统以及命令有了一些初步的了解，如果没有，请加以了解。
 - 这个repo的目的在于介绍一些基础常用的知识，以及杜绝一些危险操作，毕竟即使是一个container中也会有合作同学，虽然网管能够将你的container进行重置，但是可能丢失的环境以及数据难以找回。请大家**注意定期保存实验数据**并**杜绝危险操作**。
 
-## 你需要的一些LInux Basic Knowledge
+## 你需要的一些Linux Basic Knowledge
 
 - linux基础操作:
     - 在linux下 `ctrl+s` 下屏幕会freeze住，输入的指令**实际上是起效的**，只是不会显示，按q可以退出该模式
@@ -42,6 +42,7 @@
      - 编辑准许登陆名单文件(注意需要sudo) `sudo vim /etc/login.user.allow` 将他人的**实验室账号用户名**添加到该文件中并保存。对于sudo权限，同样使用sudo编辑`sudo vim /etc/sudoers`参照里面已有的模板修改
         - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210923194748.png)
      - 关于sudo权限，网管的建议是谨慎给与，仅较相关且长期(频繁)使用Container sudo权限的才给
+        - 🚫: 注意当你改动 **/etc/sudoers** 给其他用户添加sudo权限的时候，一定不能 **sudo chmod 777 /etc/sudoers**,会导致sudo系统的崩溃！如果遇到保存提示 `readonly file`,在vim中使用 `:w!`命令进行强制保存，并`:q`退出
      - 另外，实验室**严令禁止**随意共享实验室账号密码的行为，基本的切换用户需求有其它办法做到(参考本部分第二条)
 
 2. 同一个container访问他人目录/使用他人账号
@@ -62,8 +63,9 @@
 2. 不要**尝试修改或者重装nvidia驱动**，由于nvidia驱动是整台eva(Across Container)所共用的，重装所造成的问题影响范围广，且在Container内部重装完你自己大概率也用不了，可能会出更多的问题。所以，**如果你有特殊的使用需求(如需要使用旧版本的驱动)**，请联系网管(在nics-server群/邮件)发出诉求。对于兼容性问题，网管的个人建议是先做尝试，毕竟很多库都具有尚可的向前兼容能力。实在有需求，再提出申请(因为网管能做的也只是为你在老服务器上开一个Container)。如果有升级需求，也联系网管，网管会评估新驱动的稳定性和大家的使用情况，找时间升级。
 3. `/opt/`和`/usr/local/nvidia/bin`中的文件是大家共用的，尤其不要尝试修改或不小心给改了。`/opt/`中的cuda是cuda链接库，并非cuda driver，但改了也有可能影响别人。不过如果你是用conda装pytorch等软件时，选了cuda版本，提示下载安装某个版本的cudatoolkit，则是另外下载一份pytorch自己用的链接库，与`/opt/`里的其实没有关系。
 4. (对于你自己的Container)，如果出现了apt安装某些很常见的库报错了，depedency不满足，首先请换一个source.list试试，**不要去对apt各种修改**
+5. 当你需要拷贝，搬运，产生大数据集与文件时候，请优先将其放到`eva_share`的空间，这**不会占用你的Container的空间**，请预先运行`df -kh`以确定当前Container/Eva_share的空间足够放下你所需要的文件。
+6. 注意当你改动 **/etc/sudoers** 给其他用户添加sudo权限的时候，一定不能 **sudo chmod 777 /etc/sudoers**,会导致sudo系统的崩溃！如果遇到保存提示 `readonly file`,在vim中使用 `:w!`命令进行强制保存，并`:q`退出
 
----
 
 # 环境配置
 
@@ -92,6 +94,25 @@
         - 需要将cuda的对应库的位置加到LD_LIBRARY的环境变量中 `export LD_LIBRARY_PATH="/opt/cuda/lib64:$LD_LIBRARY_PATH"`
     - 如果你有特殊的CUDA-DRIVER的需求，请联系网管协助安装
     - 由于我们的container管理方式，大家共享一份硬件资源，所以在container内部使用nvidia-smi并不能看到实际占用显卡资源的pid，可以在`/opt/nvidia.log`文件中查询到每分钟更新的当前显卡占用情况的pid以及对应程序详情。
+    - cuDNN的安装与版本检查
+        - 确认cuDNN是否已经安装
+            - 通过`which nvcc`命令查看cuda安装路径，下面以路径是`/usr/local/cuda/`为例。
+            - 查看`/usr/local/cuda/include/`下是否有cudnn.h文件。
+            - 查看`/usr/local/cuda/lib64/`下是否有libcudnn*等文件。
+        - cuDNN的安装
+            - Step 1: 注册nvidia developer账号，然后在[这里](https://developer.nvidia.com/cudnn)下载cudnn到服务器本地文件夹。注意根据当前的cuda版本来选择对应的cudnn，查看cuda版本的命令为`nvcc --version`。
+            - Step 2: 查看cuda的安装路径。eva机器上通常在`/opt/cuda/`，建议使用前述的软连接方式进行cuda位置的标准化，标准化后为`/usr/local/cuda/`。如果找不到cuda安装位置，可以通过`which nvcc`命令查看。
+            - Step 3: 将下载解压后的文件复制到cuda安装路径下（这里以`/usr/local/cuda/`为例）：
+            ```
+            cd your/cudnn/folder
+            sudo cp include/cudnn.h /usr/local/cuda/include
+            sudo cp lib64/libcudnn* /usr/local/cuda/lib64
+            sudo chmod a+r /usr/local/cuda/lib64/libcudnn*
+            ```
+        - cuDNN的版本检查（这里以cuda路径为`/usr/local/cuda/`为例)
+        ```
+        cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2
+        ```
 
 2. 可以从/opt目录拷贝一些常用文件过来，注意该目录的scp需要sudo权限
 

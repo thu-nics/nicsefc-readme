@@ -50,6 +50,8 @@
 ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210919204219.png)
 
 一样可以登录，这样就不用记一串没有含义的数字了。且需要注意的是，服务器的IP可能会动态改变，但是域名不会改变，改变后的IP会被我们实验室的域名服务自动映射，所以除了Container刚建立时域名还没有同步的时候采用IP登陆以外，其他时候采用类似`ztc.eva7.nics.cc`这样的域名登陆即可。**只要服务器处于准入状态，那么你只要一直使用这个命令就可以登录了**)
+- 📍：注意：Container的域名是 `ztc.eva7.nics.cc` 这样的，而`eva7.nics.cc` 是eva7的主机，两者**具有独立的域名与IP**，一般用户无法登录，会报错Permission Denied。**一般情况下**，用户只需要登录如`ztc.eva7.nics.cc`的container即可。(除了Eva13，fpga等没有配置Container隔离的机器，在这些机器上，大家都是登录主机)
+
 
 3. 看，登录服务器就是这么简单！直接执行`ssh username@xxx.evax.nics.cc`就可以登录，发现登录不上，就去用`ping`找一下IP，然后在usereg中准入一下就可以了呢！其实你使用其他ssh软件，本质上就是以不同的GUI执行了这个操作，由于terminal是最为简单且快捷的方式，所以之后在**登录不上debug的时候，请使用terminal进行测试**
 
@@ -169,7 +171,7 @@
 - 对于Linux或者是Mac， 你可以直接在Terminal中完成以上操作：
     - (本质上是因为windows的cmd下的ssh并没有提供`ssh-copy-id`命令，所以需要手动处理)
     - `ssh-keygen -t rsa -b 4096`
-    - `ssh-copy-key -i id_rsa.pub ztc-eva7` 并遵从引导，输入密码，并且再次尝试登录
+    - `ssh-copy-id -i id_rsa.pub ztc-eva7` 并遵从引导，输入密码，并且再次尝试登录
 
 
 ### ssh转发图形界面
