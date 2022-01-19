@@ -42,6 +42,10 @@
 
 ## 2. 软件相关调试指南
 
+### 2-0: Tips
+
+- 如果从主机上attach到container中，可能网络路由会有一些问题，比如`git clone`以及ping其他的IP等，建议还是先配置好通过ssh配置登陆之后接着调试网络
+
 ### 2-1: 服务器维护相关(程序)
 
 > 出现过许多次某个程序卡死 / 挖矿程序等情况，导致服务器不正常
@@ -69,6 +73,12 @@
 - ping得通，但是ssh登录不上： **准入问题** (一般情况都可以先问下准入是否成功，跳出"登录成功"，或者是空白其实都属于正常)
 - ping得通，甚至能够现实输入密码，但是始终Perimssion Denied，确认不是输错密码的情况下，可能是原本的container网络fail掉了，这个IP被更新给了其他的服务器，而我们的DNS由于没有更新仍然显示老IP，这种情况大概率是主机fail掉了，要确认主机是否fail掉了，登陆上其他服务器，通过tinc内网来尝试ssh上去，比如`ssh 10.4.205.1*`,确认服务器是否物理网络fail掉，还是校园网抽风
 - 准入出现问题，诸如不在DHCP表中等等，大概率都是校园网抽风了，等待一段时间
+- 能够正常准入，主机也正常，但是Container准入之后ping不通，从主机attach进container，执行`ip route`，检查第一条是否是`10.0.3.1`，如果是，执行`route del default gw 10.0.3.1`
+
+- 网络重启/调试命令
+	- `systemctl restart systemd-networkd.service` Container中重启网络
+	- 查询服务： `systemctl list-units --type=service`  `service --statua-all`
+	- 查看系统启动服务 ``systemctl list-unit-files | grep enabled
 
 ### 2-3: 修改container的rootfs大小
 
