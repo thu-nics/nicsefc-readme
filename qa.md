@@ -36,7 +36,7 @@
 ### 1. 确定你的服务器IP
 
 1. 使用`ping 域名`的方式，查看你要登录的服务器的IP，如上面所说的，基本都可以看到如`101.6.68.180`的IP，这一步很可能你是ping不通这个IP的，但是能查到IP即可，请继续进行下一步。这一步**几乎不可能失败**，如果失败了(在2021-09-18早上，网管发现了这个问题并debug了2h，最后发现是学校的校园网崩了)。大概率是你的网络或者服务器主机的DNS服务出了问题，请汇报给网管，或者将本地笔记本电脑切换至手机热点进行测试。
-2. 可以登录上实验室网站进入DNS，查看自己的IP - [https://nicsefc.ee.tsinghua.edu.cn/internal/dns/](https://nicsefc.ee.tsinghua.edu.cn/internal/dns/)
+2.~~ 可以登录上实验室网站进入DNS，查看自己的IP - [https://nicsefc.ee.tsinghua.edu.cn/internal/dns/](https://nicsefc.ee.tsinghua.edu.cn/internal/dns/)~~ (在新版实验室网站更新之后，该Page失效)
    - 当这里看到的和上面的不一样的可能原因是dns服务还未推上云端，设定上从这里看到的会更快，用这里的ip登录会更保险
    - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210928161407.png)
 
