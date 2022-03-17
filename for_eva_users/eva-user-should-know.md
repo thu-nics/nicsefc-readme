@@ -61,7 +61,7 @@
 
 1. `sudo apt-get upgrade`命令，会按照对应的源，将你能够更新的包全部更新到最新版本，需要花很长时间，并且**很容易出现环境不兼容问题，甚至让Container崩溃**，所以**即使在很多教程中让你执行这步操作**，请跳过他(大多数时候这条操作是不必要的)
 2. 不要**尝试修改或者重装nvidia驱动**，由于nvidia驱动是整台eva(Across Container)所共用的，重装所造成的问题影响范围广，且在Container内部重装完你自己大概率也用不了，可能会出更多的问题。所以，**如果你有特殊的使用需求(如需要使用旧版本的驱动)**，请联系网管(在nics-server群/邮件)发出诉求。对于兼容性问题，网管的个人建议是先做尝试，毕竟很多库都具有尚可的向前兼容能力。实在有需求，再提出申请(因为网管能做的也只是为你在老服务器上开一个Container)。如果有升级需求，也联系网管，网管会评估新驱动的稳定性和大家的使用情况，找时间升级。
-3. `/opt/`和`/usr/local/nvidia/bin`中的文件是大家共用的，尤其不要尝试修改或不小心给改了。`/opt/`中的cuda是cuda链接库，并非cuda driver，但改了也有可能影响别人。不过如果你是用conda装pytorch等软件时，选了cuda版本，提示下载安装某个版本的cudatoolkit，则是另外下载一份pytorch自己用的链接库，与`/opt/`里的其实没有关系。
+3. `/home/eva_share/opt/`和`/usr/local/nvidia/bin`中的文件是大家共用的，尤其不要尝试修改或不小心给改了。`/home/eva_share/opt/`中的cuda是cuda链接库，并非cuda driver，但改了也有可能影响别人。不过如果你是用conda装pytorch等软件时，选了cuda版本，提示下载安装某个版本的cudatoolkit，则是另外下载一份pytorch自己用的链接库，与`/home/eva_share/opt/`里的其实没有关系。
 4. (对于你自己的Container)，如果出现了apt安装某些很常见的库报错了，depedency不满足，首先请换一个source.list试试，**不要去对apt各种修改**
 5. 当你需要拷贝，搬运，产生大数据集与文件时候，请优先将其放到`eva_share`的空间，这**不会占用你的Container的空间**，请预先运行`df -kh`以确定当前Container/Eva_share的空间足够放下你所需要的文件。
 6. 注意当你改动 **/etc/sudoers** 给其他用户添加sudo权限的时候，一定不能 **sudo chmod 777 /etc/sudoers**,会导致sudo系统的崩溃！如果遇到保存提示 `readonly file`,在vim中使用 `:w!`命令进行强制保存，并`:q`退出
@@ -78,22 +78,22 @@
     - nvidia-driver，在`/usr/local/nvidia`中，其bin文件夹中有一个`nvidia-smi`的命令，是用来查询显卡情况的常见命令
         - 为了方便你随时进行使用该命令查询，可以考虑将这个路径加入到环境变量中，加入bashrc(如果你不熟悉linux的环境变量以及bashrc的原理，请自行查询)，`export PATH=$PATH:/usr/local/nvidia/bin` 
         - 之后随时在终端中都可以进行`nvidia-smi`进行查询了 (网管的建议是写一个即时刷新的命令，`alias nv="watch -n 0.002 -d nvidia-smi"`也加入到bashrc中)
-    - CUDA，在`/opt/cuda/samples/1_Utilities/deviceQuery`位置中有一个deviceQuery的文件，有时候经常需要执行该命令用来执行检错与cuda的debug，注意执行的时候一定要**sudo**
-        - 同理也可以加一个alias来快捷执行它`alias deviceQuery="sudo /opt/cuda/samples/1_Utilities/deviceQuery/deviceQuery"`
+    - CUDA，在`/home/eva_share/opt/cuda/samples/1_Utilities/deviceQuery`位置中有一个deviceQuery的文件，有时候经常需要执行该命令用来执行检错与cuda的debug，注意执行的时候一定要**sudo**
+        - 同理也可以加一个alias来快捷执行它`alias deviceQuery="sudo /home/eva_share/opt/cuda/samples/1_Utilities/deviceQuery/deviceQuery"`
         - 正常情况应该是显示pass，对于显卡后面信息，如果显示NO是正常现象(这个指示的是各个gpu之间的互联，我们并没有nvlink，都是走的pcie)
         -  ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20211014115151.png)
         - 显示error code 999 - 去群里提醒网管帮你在主机上执行该操作，并附上截图
         - 显示error code 100 - 执行`sudo ldconfig`
         - ![](https://github.com/A-suozhang/MyPicBed/raw/master//img/20210924103422.png)
-        - 在opt目录下，你可能看到多个cuda版本，比如`/opt/cuda`和一个`/opt/cuda-11.1`, 注意区分文件是真实文件，还是软连接
+        - 在opt目录下，你可能看到多个cuda版本，比如`/home/eva_share/opt/cuda`和一个`/home/eva_share/opt/cuda-11.1`, 注意区分文件是真实文件，还是软连接
     -  (如果你安装的库不报错，这一步理论上不需要做) CUDA标准化，我们服务器上的CUDA的位置与默认位置有所不同，可能有时候会出现因为网上其他教程按照默认位置编写导致的问题，所以，这里采用软连接的方式**尽量做到CUDA位置的标准化**，这一步需要sudo
         - `ln -s /usr/local/nvidia/lib/* /usr/local/lib/`
-        - `ln -s /opt/cuda/ /usr/local/cuda`
-        - `export CUDA_HOME="/opt/cuda/"`
+        - `ln -s /home/eva_share/opt/cuda/ /usr/local/cuda`
+        - `export CUDA_HOME="/home/eva_share/opt/cuda/"`
     - 有的时候由于cuda位置不在标准位置，可能会报错: `ImportError: libcusparse.so.11: cannot open shared object file: No such file or directory`
-        - 需要将cuda的对应库的位置加到LD_LIBRARY的环境变量中 `export LD_LIBRARY_PATH="/opt/cuda/lib64:$LD_LIBRARY_PATH"`
+        - 需要将cuda的对应库的位置加到LD_LIBRARY的环境变量中 `export LD_LIBRARY_PATH="/home/eva_share/opt/cuda/lib64:$LD_LIBRARY_PATH"`
     - 如果你有特殊的CUDA-DRIVER的需求，请联系网管协助安装
-    - 由于我们的container管理方式，大家共享一份硬件资源，所以在container内部使用nvidia-smi并不能看到实际占用显卡资源的pid，可以在`/opt/nvidia.log`文件中查询到每分钟更新的当前显卡占用情况的pid以及对应程序详情。
+    - 由于我们的container管理方式，大家共享一份硬件资源，所以在container内部使用nvidia-smi并不能看到实际占用显卡资源的pid，可以在`/home/eva_share/opt/nvidia.log`文件中查询到每分钟更新的当前显卡占用情况的pid以及对应程序详情。
     - cuDNN的安装与版本检查
         - 确认cuDNN是否已经安装
             - 通过`which nvcc`命令查看cuda安装路径，下面以路径是`/usr/local/cuda/`为例。
@@ -101,7 +101,7 @@
             - 查看`/usr/local/cuda/lib64/`下是否有libcudnn*等文件。
         - cuDNN的安装
             - Step 1: 注册nvidia developer账号，然后在[这里](https://developer.nvidia.com/cudnn)下载cudnn到服务器本地文件夹。注意根据当前的cuda版本来选择对应的cudnn，查看cuda版本的命令为`nvcc --version`。
-            - Step 2: 查看cuda的安装路径。eva机器上通常在`/opt/cuda/`，建议使用前述的软连接方式进行cuda位置的标准化，标准化后为`/usr/local/cuda/`。如果找不到cuda安装位置，可以通过`which nvcc`命令查看。
+            - Step 2: 查看cuda的安装路径。eva机器上通常在`/home/eva_share/opt/cuda/`，建议使用前述的软连接方式进行cuda位置的标准化，标准化后为`/usr/local/cuda/`。如果找不到cuda安装位置，可以通过`which nvcc`命令查看。
             - Step 3: 将下载解压后的文件复制到cuda安装路径下（这里以`/usr/local/cuda/`为例）：
             ```
             cd your/cudnn/folder
@@ -114,7 +114,7 @@
         cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2
         ```
 
-2. 可以从/opt目录拷贝一些常用文件过来，注意该目录的scp需要sudo权限
+2. 可以从/home/eva_share/opt目录拷贝一些常用文件过来，注意该目录的scp需要sudo权限
 
 3. 你可能需要自己使用apt安装一些基本库,比如:
      - gcc
